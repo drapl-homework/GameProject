@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Rsrc-Class-Path: ./
-Class-Path: .
-Rsrc-Main-Class: com.base.game.Game
-Main-Class: org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader
-
