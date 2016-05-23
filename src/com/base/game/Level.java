@@ -12,6 +12,18 @@ import com.base.engine.Light;
 import com.base.engine.LightBox;
 import com.base.engine.Renderer;
 
+/**
+ * Load map data( the word "Level" probably means "map")
+ * Map data is stored in file "tileData.png",
+ * in which one pixel represents for one block in the game.
+ * Different map elements, such as ground, light, magma and enemy,
+ * is represented by the color of the pixel:
+ * White(0xffffff): Nothing
+ * Black(0x000000): Ground
+ * Red(0xff0000): Magma
+ * .... TODO
+ * Other: Light
+ */
 public class Level
 {
 	public static final int TS = 8;
@@ -220,7 +232,7 @@ public class Level
 		
 		return null;
 	}
-	
+
 	public void resetLevel()
 	{
 		Image image = new Image("/images/tileData.png");
