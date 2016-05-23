@@ -11,7 +11,7 @@ public abstract  class GameObject
 	
 	protected String tag = "null";
 	private boolean dead = false;
-	
+
 	public abstract void update(GameContainer gc, float delta, Level level);
 	public abstract void render(GameContainer gc, Renderer r, Level level);
 	public abstract void collide(GameObject go);
@@ -48,5 +48,23 @@ public abstract  class GameObject
 	{
 		this.tag = tag;
 	}
-	
+
+	/**
+	 * For a multi-pixel object, get upper-left coordinate.
+	 */
+	public Vector2f getUpperLeft() {
+		return tilePos;
+	}
+
+	/**
+	 * For a multi-pixel object, get lower-right coordinate.
+	 * If the object is 2x2, you should return
+	 * tilePos.add(new Vector2f(0.5f, 0.5f));
+	 * If the object is 3x3, you should return
+	 * tilePos.add(new Vector2f(1f, 1f));
+	 * I don't know why.
+	 */
+	public Vector2f getLowerRight() {
+		return tilePos;
+	}
 }
