@@ -12,23 +12,23 @@ import com.base.engine.Vector2f;
 
 public class Player extends GameObject
 {
-	private ImageTile spriteSheet = new ImageTile("/images/playerSheet.png", Level.TS, Level.TS);
-	private Image heart = new Image("/images/heart.png");
-	private Image jetPackAquired = new Image("/images/jetPackAcquired.png");
-	private float countDown = 0f;
-	
-	private Vector2f velocity = new Vector2f(0,0);
-	
+	private int height = 2;
+	private ImageTile[] spriteSheet = { null,
+			new ImageTile("/images/playerSheet.png", Level.TS, Level.TS),
+			new ImageTile("/images/playerSheet.png", Level.TS, 2 * Level.TS), };
+	private static Image heart = new Image("/images/heart.png");
+	private static Image jetPackAquired = new Image("/images/jetPackAcquired.png");
+	private static AudioPlayer hurt = new AudioPlayer("/sound/playerHurt.wav");
+	private static AudioPlayer shoot = new AudioPlayer("/sound/throw.wav");
+
+	private float countDown = 0f; // countdown for "jet acquired."
+
 	private float movSpeed = 75f;
 	private float fallDistance = 0;
 	
 	private boolean ground = false;
 	private boolean jetPack = false;
-	private Vector2f spawnPoint = new Vector2f(0,0);
-	
-	private AudioPlayer hurt = new AudioPlayer("/sound/playerHurt.wav");
-	private AudioPlayer shoot = new AudioPlayer("/sound/throw.wav");
-	
+
 	float invincibility = 0.5f;
 	int lives = 15;
 	
@@ -40,9 +40,9 @@ public class Player extends GameObject
 	public Player(int x, int y)
 	{
 		super.tilePos = new Vector2f(x,y);
-		spawnPoint = new Vector2f(x,y);
-		spriteSheet.lb = 3;
-		
+		spriteSheet[1].lb = 3;
+		spriteSheet[2].lb = 3;
+
 		tag = "player";
 	}
 
@@ -50,127 +50,34 @@ public class Player extends GameObject
 	public void update(GameContainer gc, float delta, Level level)
 	{
 		this.level = level;
-		if(Input.isKey(KeyEvent.VK_D))
-		{
+
+
+		// walk forward
+		if(Input.isKey(KeyEvent.VK_D)) {
 			animX = 0;
-			if((int)offset.getY() == 0)
-			{
-				if(level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY()) != 1)
-				{
-					offset.setX(offset.getX() + delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() < 0)
-					{
-						offset.setX(offset.getX() + delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
-			else if((int)offset.getY() > 0)
-			{
-				if(level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY()) != 1 && level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() + 1) != 1)
-				{
-					offset.setX(offset.getX() + delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() < 0)
-					{
-						offset.setX(offset.getX() + delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
-			else if((int)offset.getY() < 0)
-			{
-				if(level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY()) != 1 && level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() - 1) != 1)
-				{
-					offset.setX(offset.getX() + delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() < 0)
-					{
-						offset.setX(offset.getX() + delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
+			calculateXOffset(delta, 1);
 		}
-		
-		if(Input.isKey(KeyEvent.VK_A))
-		{
+
+		// walk backward
+		if(Input.isKey(KeyEvent.VK_A)) {
 			animX = 1;
-			if((int)offset.getY() == 0)
-			{
-				if(level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY()) != 1)
-				{
-					offset.setX(offset.getX() - delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() > 0)
-					{
-						offset.setX(offset.getX() - delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
-			else if((int)offset.getY() > 0)
-			{
-				if(level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY()) != 1 && level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() + 1) != 1)
-				{
-					offset.setX(offset.getX() - delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() > 0)
-					{
-						offset.setX(offset.getX() - delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
-			else if((int)offset.getY() < 0)
-			{
-				if(level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY()) != 1 && level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() - 1) != 1)
-				{
-					offset.setX(offset.getX() - delta * movSpeed);
-				}
-				else
-				{
-					if(offset.getX() > 0)
-					{
-						offset.setX(offset.getX() - delta * movSpeed);
-					}
-					else
-					{
-						offset.setX(0);
-					}
-				}
-			}
+			calculateXOffset(delta, -1);
+		}
+
+		if(ground && height == 2 && Input.isKey(KeyEvent.VK_S)) {
+			tilePos.setY(tilePos.getY() + 1);
+			height = 1;
+		}
+
+		if(height == 1 && !Input.isKey(KeyEvent.VK_S)) {
+			tilePos.setY(tilePos.getY() - 1);
+			height = 2;
 		}
 		
 		if(jetPack == false)
 		{
-			if(Input.isKey(KeyEvent.VK_W) && ground)
+			if(ground && Input.isKey(KeyEvent.VK_W) &&
+					!Input.isKey(KeyEvent.VK_S))
 			{
 				fallDistance = -1.8f;
 				ground = false;
@@ -193,30 +100,36 @@ public class Player extends GameObject
 		{
 			fallDistance = -2;
 		}
-		
+
+		// hit the ground
 		if(fallDistance > 0 && offset.getY() >= 0)
 		{
+			// when not walking
 			if((int)offset.getX() == 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1) == 1)
+				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1)
 				{
 					fallDistance = 0;
 					offset.setY(0);
 					ground = true;
 				}
 			}
+			// when walking forward
 			else if((int)offset.getX() > 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1) == 1 || level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() + 1) == 1)
+				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1 ||
+						level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() + 1 + (height - 1)) == 1)
 				{
 					fallDistance = 0;
 					offset.setY(0);
 					ground = true;
 				}
 			}
+			// when walking backward
 			else if((int)offset.getX() < 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1) == 1 || level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() + 1) == 1)
+				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1 ||
+						level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() + 1 + (height - 1)) == 1)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -224,7 +137,8 @@ public class Player extends GameObject
 				}
 			}
 		}
-		
+
+		// hit the ceil
 		if(fallDistance < 0 && offset.getY() <= 0)
 		{
 			if((int)offset.getX() == 0)
@@ -302,15 +216,15 @@ public class Player extends GameObject
 			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200));
 			shoot.play();
 		}
-		
-		if(level.getTile((int)tilePos.getX(), (int)tilePos.getY()) == 2)
-		{
-			die();
-		}
-		
-		if(level.getTile((int)tilePos.getX(), (int)tilePos.getY()) == 3)
-		{
-			die();
+
+		for(int i=0; i < height; i++) {
+			if (level.getTile((int) tilePos.getX(), (int) tilePos.getY() + i) == 2) {
+				die();
+			}
+
+			if (level.getTile((int) tilePos.getX(), (int) tilePos.getY() + i) == 3) {
+				die();
+			}
 		}
 		
 		if(invincibility > 0)
@@ -328,6 +242,71 @@ public class Player extends GameObject
 		Physics.addObject(this);
 	}
 
+	/**
+	 * calculate offset in one frame
+	 * @param delta time delta
+	 * @param direction 1 for forward, -1 for backward
+     */
+	private void calculateXOffset(float delta, int direction) {
+		// assert direction == 1 || direction == -1;
+		if((int)offset.getY() == 0) // walking horizontally
+		{
+			// no blocking, just walk.
+			if(canWalk(direction, 0))
+			{
+				offset.setX(offset.getX() + direction * delta * movSpeed);
+			} else {offset.setX(0); }/*else { // blocking at (x+1, y)
+				if (offset.getX() * direction < 0) {
+					offset.setX(offset.getX() + direction * delta * movSpeed);
+				} else {
+					offset.setX(0);
+				}
+			} */ // ???
+		} else if((int)offset.getY() > 0) {
+			if(canWalk(direction, 0) && canWalk(direction, 1)) {
+				offset.setX(offset.getX() + direction * delta * movSpeed);
+			} /* else {
+				if(offset.getX() * direction < 0) {
+					offset.setX(offset.getX() + direction * delta * movSpeed);
+				} else {
+					offset.setX(0);
+				}
+			} */ // ???
+		}
+		else if((int)offset.getY() < 0)
+		{
+			if(canWalk(direction, 0) && canWalk(direction, -1))
+			{
+				offset.setX(offset.getX() + direction * delta * movSpeed);
+			}
+			else
+			{
+				if(offset.getX() * direction < 0)
+				{
+					offset.setX(offset.getX() + direction * delta * movSpeed);
+				}
+				else
+				{
+					offset.setX(0);
+				}
+			}
+		}
+	}
+
+	/**
+	 * whether the player can walk toward certain direction
+	 * @param xDirection
+	 * @param yDirection
+     * @return
+     */
+	private boolean canWalk(int xDirection, int yDirection) {
+		for(int i=0; i<height; i++)
+			if(level.getTile((int)tilePos.getX() + xDirection,
+					(int)tilePos.getY() + yDirection + i) == 1) // block
+				return false;
+		return true;
+	}
+
 	float flashCounter = 0;
 	int flash = 0;
 	
@@ -335,7 +314,9 @@ public class Player extends GameObject
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
 		if((int)flash == 1)
-			r.drawImageTile(spriteSheet, animX, animY, (int)(super.tilePos.getX() * Level.TS + offset.getX()), (int)(super.tilePos.getY() * Level.TS + offset.getY()));
+			r.drawImageTile(spriteSheet[height], animX, animY,
+					(int)(super.tilePos.getX() * Level.TS + offset.getX()),
+					(int)(super.tilePos.getY() * Level.TS + offset.getY()));
 	
 		for(int i = 0; i < lives; i++)
 		{
@@ -359,7 +340,7 @@ public class Player extends GameObject
 		{
 			jetPack = true;
 			countDown = 1.0f;
-			animY = 1;
+			// animY = 1;
 		}
 	}
 	
@@ -388,5 +369,10 @@ public class Player extends GameObject
 			level.addObject(new Particle(tilePos, offset,0xffff0000,1));
 		}
 		setDead(true);
+	}
+
+	@Override
+	public Vector2f getLowerRight() {
+		return tilePos.add(new Vector2f(0f, 0.5f * (height - 1)));
 	}
 }
