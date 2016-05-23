@@ -9,7 +9,7 @@ public class Renderer
 	private int[] lm;
 	private int[] lb;
 	
-	private int ambientLight = Pixel.getColor(0.1f, 0.1f, 0.1f);
+	private int ambientLight = Pixel.getColor(0.35f, 0.35f, 0.35f);
 	
 	private Vector2f translate = new Vector2f(0,0);
 	

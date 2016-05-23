@@ -21,22 +21,22 @@ public class Game extends AbstractGame
 	@Override
 	public void update(GameContainer gc, float delta)
 	{
-		if(Input.isKeyDown(KeyEvent.VK_NUMPAD9))
+		if(Input.isKeyDown(KeyEvent.VK_NUMPAD9) || Input.isKeyDown(KeyEvent.VK_9))
 		{
 			gc.getRenderer().setAmbientLight(Pixel.getLightSum(gc.getRenderer().getAmbientLight(), 0.05f));
 		}
-		if(Input.isKeyDown(KeyEvent.VK_NUMPAD3))
+		if(Input.isKeyDown(KeyEvent.VK_NUMPAD3) || Input.isKeyDown(KeyEvent.VK_3))
 		{
 			gc.getRenderer().setAmbientLight(Pixel.getLightSum(gc.getRenderer().getAmbientLight(), -0.05f));
 		}
 		
-		if(Input.isKeyDown(KeyEvent.VK_NUMPAD7))
+		if(Input.isKeyDown(KeyEvent.VK_NUMPAD7) || Input.isKeyDown(KeyEvent.VK_7))
 		{
 			gc.setScale(gc.getScale() + 0.5f);
 			gc.resize();
 			System.out.println("hey");
 		}
-		if(Input.isKeyDown(KeyEvent.VK_NUMPAD1))
+		if(Input.isKeyDown(KeyEvent.VK_NUMPAD1) || Input.isKeyDown(KeyEvent.VK_1))
 		{
 			gc.setScale(gc.getScale() - 0.5f);
 			gc.resize();
