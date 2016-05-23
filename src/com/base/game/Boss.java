@@ -77,7 +77,7 @@ public class Boss extends GameObject
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
-		r.drawImage(image, (int)(tilePos.getX() * Level.TS + offset.getX()) - Level.TS, (int)(tilePos.getY() * Level.TS + offset.getY()) - Level.TS);
+		r.drawImage(image, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
 	@Override
@@ -94,6 +94,11 @@ public class Boss extends GameObject
 				setDead(true);
 			}
 		}
+	}
+
+	@Override
+	public Vector2f getLowerRight() {
+		return tilePos.add(new Vector2f(1f, 1f));
 	}
 
 }
