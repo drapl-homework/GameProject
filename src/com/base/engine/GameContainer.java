@@ -3,18 +3,20 @@ package com.base.engine;
 public class GameContainer implements Runnable
 {
 	private Thread thread;
-	private AbstractGame game;
+	protected IGame game;
 	private Window window;
 	private Renderer renderer;
 	private Input input;
-	
+
 	private int width = 320, height = 240;
 	private float scale = 2.5f;
 	private String title = "LudumDare";
 	private volatile boolean isRunning = false;
 	private double frameCap = 1.0 / 60.0;
-	
-	public GameContainer(AbstractGame game)
+
+	protected GameContainer() {}
+
+	public GameContainer(IGame game)
 	{
 		this.game = game;
 	}

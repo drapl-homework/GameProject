@@ -2,14 +2,13 @@ package com.base.game;
 
 import java.awt.event.KeyEvent;
 
-import com.base.engine.AbstractGame;
-import com.base.engine.AudioPlayer;
+import com.base.engine.IGame;
 import com.base.engine.GameContainer;
 import com.base.engine.Input;
 import com.base.engine.Pixel;
 import com.base.engine.Renderer;
 
-public class Game extends AbstractGame
+public class Game extends GameContainer implements IGame
 {
 	private Level level;
 
@@ -17,6 +16,7 @@ public class Game extends AbstractGame
 
 	public Game()
 	{
+		super.game = this;
 		level = new Level();
 	}
 	
@@ -76,7 +76,7 @@ public class Game extends AbstractGame
 
 	public static void main(String args[])
 	{
-		GameContainer gc = new GameContainer(new Game());
+		GameContainer gc = new Game();
 		gc.setWidth(160);
 		gc.setHeight(96);
 		gc.setScale(5f);
