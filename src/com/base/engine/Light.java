@@ -1,6 +1,8 @@
 package com.base.engine;
 
-public class Light
+import java.io.Serializable;
+
+public class Light implements Serializable
 {
 	public int color, radius, diameter;
 	public int x, y;

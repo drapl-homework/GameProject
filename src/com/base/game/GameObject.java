@@ -4,7 +4,9 @@ import com.base.engine.GameContainer;
 import com.base.engine.Renderer;
 import com.base.engine.Vector2f;
 
-public abstract  class GameObject
+import java.io.Serializable;
+
+public abstract class GameObject implements Serializable
 {
 	protected Vector2f tilePos = new Vector2f(0,0);
 	protected Vector2f offset = new Vector2f(0,0);

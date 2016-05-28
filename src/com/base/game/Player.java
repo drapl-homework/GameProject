@@ -32,7 +32,7 @@ public class Player extends GameObject
 	float invincibility = 0.5f;
 	int lives = 15;
 	
-	private Level level;
+	private transient Level level;
 	
 	int animX = 0;
 	int animY = 0;

@@ -1,6 +1,8 @@
 package com.base.engine;
 
-public class Vector2f
+import java.io.Serializable;
+
+public class Vector2f implements Serializable
 {
 	private float x, y;
 	

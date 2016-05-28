@@ -1,12 +1,17 @@
 package com.base.game;
 
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 import com.base.engine.IGame;
 import com.base.engine.GameContainer;
 import com.base.engine.Input;
 import com.base.engine.Pixel;
 import com.base.engine.Renderer;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Game extends GameContainer implements IGame
 {
@@ -18,6 +23,33 @@ public class Game extends GameContainer implements IGame
 	{
 		super.game = this;
 		level = new Level();
+	}
+
+	/**
+	 * JFileChooser with override prompt.
+	 * See http://stackoverflow.com/questions/3651494/jfilechooser-with-confirmation-dialog
+	 */
+	class MyFileChooser extends JFileChooser {
+		@Override
+		public void approveSelection(){
+			File f = getSelectedFile();
+			if(f.exists() && getDialogType() == SAVE_DIALOG){
+				int result = JOptionPane.showConfirmDialog(this, "The file exists, overwrite?","Existing file",JOptionPane.YES_NO_CANCEL_OPTION);
+				switch(result){
+					case JOptionPane.YES_OPTION:
+						super.approveSelection();
+						return;
+					case JOptionPane.NO_OPTION:
+						return;
+					case JOptionPane.CLOSED_OPTION:
+						return;
+					case JOptionPane.CANCEL_OPTION:
+						cancelSelection();
+						return;
+				}
+			}
+			super.approveSelection();
+		}
 	}
 	
 	@Override
@@ -45,6 +77,59 @@ public class Game extends GameContainer implements IGame
 		}
 		if(Input.isKeyDown(KeyEvent.VK_ENTER)) {
 			isPaused = !isPaused();
+		}
+
+		// handle save/load
+		try {
+			if(Input.isKeyDown(KeyEvent.VK_2)) { // save game
+				boolean pauseStatus = isPaused;
+				isPaused = true;
+				if(level.getBoss() == null) { // the boss has been dead.
+					JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
+							"Winner doesn't have to save the game!", "Save",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+				} else if(level.getPlayer() == null) { // the player has been dead.
+					JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
+							"Loser doesn't have to save the game!", "Save",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+				} else {
+					JFileChooser fc = new MyFileChooser();
+					FileNameExtensionFilter filter = new FileNameExtensionFilter(
+							"Saved Games", "sav", "save");
+					fc.setFileFilter(filter);
+					fc.setCurrentDirectory(new File("."));
+					int returnVal = fc.showSaveDialog(fc);
+					if (returnVal == 0) { // get file successfully
+						String filename = fc.getSelectedFile().getAbsolutePath();
+						if (!filename.endsWith(".sav")) // must be ".sav" extension
+							filename = filename + ".sav";
+						level.save(filename);
+						JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
+								"Save successfully.", "Save",
+								JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+					}
+				}
+				isPaused = pauseStatus;
+			}
+			if(Input.isKeyDown(KeyEvent.VK_4)) { // load Game
+				boolean pauseStatus = isPaused;
+				isPaused = true;
+				JFileChooser fc = new MyFileChooser();
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(
+						"Saved Games", "sav", "save");
+				fc.setFileFilter(filter);
+				fc.setCurrentDirectory(new File("."));
+				int returnVal = fc.showOpenDialog(fc);
+				if(returnVal == 0) { // get file successfully
+					level.load(fc.getSelectedFile().getAbsolutePath());
+					JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
+							"Load successfully.", "Load",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
+				}
+				isPaused = pauseStatus;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		if(!isPaused)

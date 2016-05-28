@@ -1,6 +1,7 @@
 package com.base.game;
 
 import java.awt.event.KeyEvent;
+import java.io.*;
 import java.util.ArrayList;
 
 import com.base.engine.AudioPlayer;
@@ -48,6 +49,7 @@ public class Level
 	private AudioPlayer music = new AudioPlayer("/sound/music.wav");
 	
 	private Player player;
+
 	private Boss boss;
 	
 	public Level()
@@ -57,6 +59,64 @@ public class Level
 		camera = new Camera(player);
 		boss = (Boss) getObject("boss");
 		music.loop();
+	}
+
+	/**
+	 * get the boss object
+	 * @return
+     */
+	public Boss getBoss() {
+		if(boss != null && boss.isDead())
+			return null;
+		return boss;
+	}
+
+	/**
+	 * get the boss object
+	 * @return
+	 */
+	public Player getPlayer() {
+		if(player != null && player.isDead())
+			return null;
+		return player;
+	}
+
+	/**
+	 * save the game
+	 * @param path save file path
+	 * @throws IOException
+     */
+	public void save(String path) throws IOException {
+		System.out.println("Saving...");
+		File file = new File(path);
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+		out.writeObject(tiles);
+		out.writeObject(go);
+		out.writeObject(lights);
+		out.close();
+	}
+
+	/**
+	 * load the game from @param path.
+	 * @param path
+	 * @throws IOException
+     */
+	public void load(String path) throws IOException {
+		File file = new File(path);
+		ObjectInputStream oin = new ObjectInputStream(new FileInputStream(file));
+		go = new ArrayList<>();
+		try {
+			tiles = (int[]) oin.readObject();
+			go = (ArrayList<GameObject>) oin.readObject();
+			lights = (ArrayList<Light>) oin.readObject();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		oin.close();
+
+		player = (Player) getObject("player");
+		camera = new Camera(player);
+		boss = (Boss) getObject("boss");
 	}
 	
 	public void update(GameContainer gc, float delta)
