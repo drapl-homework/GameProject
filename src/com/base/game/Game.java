@@ -13,6 +13,8 @@ public class Game extends AbstractGame
 {
 	private Level level;
 
+	private boolean isPaused;
+
 	public Game()
 	{
 		level = new Level();
@@ -41,9 +43,12 @@ public class Game extends AbstractGame
 			gc.setScale(gc.getScale() - 0.5f);
 			gc.resize();
 		}
+		if(Input.isKeyDown(KeyEvent.VK_ENTER)) {
+			isPaused = !isPaused();
+		}
 		
-		
-		level.update(gc, delta);
+		if(!isPaused)
+			level.update(gc, delta);
 	}
 
 	@Override
@@ -51,6 +56,23 @@ public class Game extends AbstractGame
 	{
 		level.render(gc, r);
 	}
+
+	/**
+	 * check whether the game is paused.
+	 * @return
+     */
+	public boolean isPaused() {
+		return isPaused;
+	}
+
+	/**
+	 * pause or restart the game
+	 * @param pause
+     */
+	public void setPause(boolean pause) {
+		isPaused = pause;
+	}
+
 
 	public static void main(String args[])
 	{
@@ -60,5 +82,4 @@ public class Game extends AbstractGame
 		gc.setScale(5f);
 		gc.start();
 	}
-
 }
