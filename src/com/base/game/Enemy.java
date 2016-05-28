@@ -13,8 +13,8 @@ public class Enemy extends GameObject
 	
 	private float cd = 1;
 	
-	private AudioPlayer shoot = new AudioPlayer("/sound/enemyshoot.wav");
-	private AudioPlayer dead = new AudioPlayer("/sound/enemydead.wav");
+	private static AudioPlayer shoot = new AudioPlayer("/sound/enemyshoot.wav");
+	private static AudioPlayer dead = new AudioPlayer("/sound/enemydead.wav");
 	
 	public Enemy(int x, int y)
 	{

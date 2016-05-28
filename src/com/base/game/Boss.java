@@ -15,7 +15,7 @@ public class Boss extends GameObject
 
 	float cd = 1;
 	
-	private AudioPlayer hurt = new AudioPlayer("/sound/bossHurt.wav");
+	private static AudioPlayer hurt = new AudioPlayer("/sound/bossHurt.wav");
 	
 	public Boss(int x, int y)
 	{

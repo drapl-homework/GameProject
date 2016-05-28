@@ -60,5 +60,5 @@ public class Game extends AbstractGame
 		gc.setScale(5f);
 		gc.start();
 	}
-	
+
 }
