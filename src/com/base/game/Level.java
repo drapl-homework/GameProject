@@ -27,7 +27,8 @@ import com.base.engine.Renderer;
 public class Level
 {
 	public static final int TS = 8;
-	
+
+	private static Image mapData = new Image("/images/tileData.png");
 	private final int levelW = 200;
 	private final int levelH = 12;
 	private int[] tiles = new int[levelW * levelH];
@@ -51,7 +52,7 @@ public class Level
 	
 	public Level()
 	{
-		loadLevel("/images/tileData.png");
+		loadLevel(true, true);
 		player = (Player) getObject("player");
 		camera = new Camera(player);
 		boss = (Boss) getObject("boss");
@@ -67,7 +68,7 @@ public class Level
 			if(Input.isKeyDown(KeyEvent.VK_SPACE))
 			{
 				go.clear();
-				resetLevel();
+				loadLevel(false, true);
 				player = (Player) getObject("player");
 				boss = (Boss) getObject("boss");
 				camera = new Camera(player);
@@ -173,50 +174,48 @@ public class Level
 	{
 		go.add(gameObject);
 	}
-	
-	public void loadLevel(String path)
+
+	public void loadLevel(boolean loadMap, boolean loadGameObject)
 	{
-		Image image = new Image(path);
-		
-		for(int x = 0; x < image.w; x++)
+		for(int x = 0; x < mapData.w; x++)
 		{
-			for(int y = 0; y < image.h; y++)
+			for(int y = 0; y < mapData.h; y++)
 			{
-				if(image.p[x + y * image.w] == 0xff000000)
+				if(mapData.p[x + y * mapData.w] == 0xff000000 && loadMap)
 				{
-					tiles[x + y * image.w] = 1;
+					tiles[x + y * mapData.w] = 1;
 				}
-				else if(image.p[x + y * image.w] == 0xffff0000)
+				else if(mapData.p[x + y * mapData.w] == 0xffff0000 && loadMap)
 				{
-					tiles[x + y * image.w] = 2;
+					tiles[x + y * mapData.w] = 2;
 				}
-				else if(image.p[x + y * image.w] == 0xff00ff00)
+				else if(mapData.p[x + y * mapData.w] == 0xff00ff00 && loadGameObject)
 				{
 					go.add(new Player(x,y));
 				}
-				else if(image.p[x + y * image.w] == 0xffff00ff)
+				else if(mapData.p[x + y * mapData.w] == 0xffff00ff && loadGameObject)
 				{
 					go.add(new Enemy(x,y));
 				}
-				else if(image.p[x + y * image.w] == 0xffffffff)
+				else if(mapData.p[x + y * mapData.w] == 0xffffffff && loadMap)
 				{
-					tiles[x + y * image.w] = 0;
+					tiles[x + y * mapData.w] = 0;
 				}
-				else if(image.p[x + y * image.w] == 0xff666666)
+				else if(mapData.p[x + y * mapData.w] == 0xff666666 && loadMap)
 				{
-					tiles[x + y * image.w] = 3;
+					tiles[x + y * mapData.w] = 3;
 				}
-				else if(image.p[x + y * image.w] == 0xff0000ff)
+				else if(mapData.p[x + y * mapData.w] == 0xff0000ff && loadGameObject)
 				{
 					go.add(new JetPack(x,y));
 				}
-				else if(image.p[x + y * image.w] == 0xff00ffff)
+				else if(mapData.p[x + y * mapData.w] == 0xff00ffff && loadGameObject)
 				{
 					go.add(new Boss(x,y));
 				}
-				else
+				else if(loadMap)
 				{
-					lights.add(new Light(image.p[x + y * image.w], 50, x, y));
+					lights.add(new Light(mapData.p[x + y * mapData.w], 50, x, y));
 				}
 			}
 		}
@@ -231,33 +230,5 @@ public class Level
 		}
 		
 		return null;
-	}
-
-	public void resetLevel()
-	{
-		Image image = new Image("/images/tileData.png");
-		
-		for(int x = 0; x < image.w; x++)
-		{
-			for(int y = 0; y < image.h; y++)
-			{
-				if(image.p[x + y * image.w] == 0xff00ff00)
-				{
-					go.add(new Player(x,y));
-				}
-				else if(image.p[x + y * image.w] == 0xffff00ff)
-				{
-					go.add(new Enemy(x,y));
-				}
-				else if(image.p[x + y * image.w] == 0xff0000ff)
-				{
-					go.add(new JetPack(x,y));
-				}
-				else if(image.p[x + y * image.w] == 0xff00ffff)
-				{
-					go.add(new Boss(x,y));
-				}
-			}
-		}
 	}
 }
