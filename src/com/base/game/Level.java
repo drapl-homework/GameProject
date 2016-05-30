@@ -3,6 +3,8 @@ package com.base.game;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import javax.swing.Timer;
+
 import com.base.engine.AudioPlayer;
 import com.base.engine.GameContainer;
 import com.base.engine.Image;
@@ -49,6 +51,8 @@ public class Level
 	private Player player;
 	private Boss boss;
 	
+	private Timer timeshower;
+	
 	public Level()
 	{
 		loadLevel("/images/tileData.png");
@@ -56,6 +60,12 @@ public class Level
 		camera = new Camera(player);
 		boss = (Boss) getObject("boss");
 		music.loop();
+		go.add(new GameTimer());
+		
+		timeshower = new Timer(1, new GameTimer());
+		GameTimer.setStartTime(System.currentTimeMillis());
+		GameTimer.setBufferTime(0);
+		timeshower.start();
 	}
 	
 	public void update(GameContainer gc, float delta)
@@ -259,5 +269,10 @@ public class Level
 				}
 			}
 		}
+		go.add(new GameTimer());
+		timeshower = new Timer(1, new GameTimer());
+		GameTimer.setStartTime(System.currentTimeMillis());
+		GameTimer.setBufferTime(0);
+		timeshower.start();
 	}
 }
