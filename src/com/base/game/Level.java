@@ -25,7 +25,7 @@ import com.base.engine.Renderer;
  * White(0xffffff): Nothing
  * Black(0x000000): Ground
  * Red(0xff0000): Magma
- * (0x...待定义)£ºChangable£Ôile
+ * (0x...待定义)：ChangableTile
  * .... TODO
  * Other: Light
  */
@@ -39,6 +39,10 @@ public class Level
 	
 	public void changeTiles(int x, int y, int type) {
 		tiles[x + y * levelW] = type;
+	}
+	
+	public void changeTiles(int pos, int type){
+		tiles[pos] = type;
 	}
 
 	private int[] changingTiles = new int[levelW * levelH];
@@ -110,17 +114,15 @@ public class Level
 				for(int i = 0; i < levelW * levelH; i++)
 				{
 					if (changingTiles[i]==1)
-						tiles[i]=1;
+						changeTiles(i, 1);
 				}
 			else
 				for(int i = 0; i < levelW * levelH; i++)
 				{
 					if (changingTiles[i]==1)
-						tiles[i]=0;
+						changeTiles(i, 0);
 				}
 		}
-		//render(gc, r);
-		
 	}
 
 	public void render(GameContainer gc, Renderer r)
@@ -257,8 +259,8 @@ public class Level
 				}
 			}
 		}
-		//changingTiles[10+200*6]=1;
-		//changingTiles[10+200*7]=1;
+		//changingTiles[10+200*6]=1;  //for test
+		//changingTiles[10+200*7]=1;  //for test
 		go.add(new GameTimer());
 		timeshower = new Timer(1, new GameTimer());
 		GameTimer.setStartTime(System.currentTimeMillis());
