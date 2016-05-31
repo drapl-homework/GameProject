@@ -10,15 +10,15 @@ public class EBullet extends GameObject
 {
 	private float dX, dY;
 	
-	private ImageTile image = new ImageTile("/images/eBullet.png", 3,3);
+	private Image image = new Image("/images/eBullet.png");
 	
 	public EBullet(float x, float y, GameObject go)
 	{
 		tilePos = new Vector2f((int)x / Level.TS, (int)y / Level.TS);
 		offset = new Vector2f((int)x % Level.TS, (int)y % Level.TS);
 		Vector2f direction = tilePos.mul(new Vector2f(Level.TS, Level.TS)).add(offset).add(go.getTilePos().mul(new Vector2f(Level.TS, Level.TS)).add(go.offset.add(new Vector2f(4,4))).reflect()).normalized().reflect();
-		dX = direction.getX() * 25;
-		dY = direction.getY() * 25;
+		dX = direction.getX() * 25 * Level.TS / 8;
+		dY = direction.getY() * 25 * Level.TS / 8;
 		tag = "eBullet";
 	}
 
@@ -75,7 +75,7 @@ public class EBullet extends GameObject
 			setDead(true);
 			return;
 		}
-		r.drawImageTile(image, 0, 0, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
+		r.drawImage(image, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import com.base.engine.Renderer;
  */
 public class Level
 {
-	public static final int TS = 8;
+	public static final int TS = 48;
 
 	private static Image mapData = new Image("/images/tileData.png");
 	private final int levelW = 200;
@@ -35,12 +35,14 @@ public class Level
 	private int[] tiles = new int[levelW * levelH];
 	
 	private Camera camera;
-	
-	private ImageTile tileSheet = new ImageTile("/images/tileSheet.png", 8, 8);
+
+	private ImageTile tileSheet = new ImageTile("/images/tileSheet.png", 48, 48);
+	private Image soil = new Image("/images/soil.png");
+	private Image soil2 = new Image("/images/soil2.png");
+	private Image air = new Image("/images/air.png");
+	private Image lava = new Image("/images/lava.png");
 	private Image deadScreen = new Image("/images/deadScreen.png");
-	private Image startScreen = new Image("/images/startScreen.png");
 	private Image winScreen = new Image("/images/winScreen.png");
-	private Image optionScreen = new Image("/images/optionMenu.png");
 	private LightBox lightBox = new LightBox(100, 0xffff6600);
 	
 	private ArrayList<GameObject> go = new ArrayList<GameObject>();
@@ -155,21 +157,25 @@ public class Level
 	{
 		r.setTranslate(camera.getPos().getX(), camera.getPos().getY());
 		
-		for(int x = (int) (-camera.getPos().getX() / Level.TS); x < (int) (-camera.getPos().getX() / Level.TS) + gc.getWidth() / Level.TS + 1; x++)
+		for(int x = (int) (-camera.getPos().getX() / Level.TS); x < (int) (-camera.getPos().getX() / Level.TS) + gc.getWidth() / Level.TS + 2; x++)
 		{
 			for(int y = (int) (-camera.getPos().getY() / Level.TS); y < (int) (-camera.getPos().getY() / Level.TS) + gc.getHeight() / Level.TS; y++)
 			{
 				if(x >= levelW)
 					return;
+				if(y >= levelH || y < 0)
+					continue;
 				if(tiles[x + y * levelW] == 1)
 				{
-					tileSheet.lb = 2;
-					r.drawImageTile(tileSheet, 1, 0, x * tileSheet.tW, y * tileSheet.tH);
+					//tileSheet.lb = 2;
+					//r.drawImageTile(tileSheet, 1, 0, x * tileSheet.tW, y * tileSheet.tH);
+					r.drawImage(soil, x * TS, y * TS);
 				}
 				else if(tiles[x + y * levelW] == 0)
 				{
 					tileSheet.lb = 0;
 					r.drawImageTile(tileSheet, 0, 0, x * tileSheet.tW, y * tileSheet.tH);
+					// r.drawImage(air, x * TS, y * TS);
 				}
 				else
 				{
@@ -179,8 +185,6 @@ public class Level
 			}
 		}
 		
-		r.drawImage(startScreen, 160, 0);
-		r.drawImage(optionScreen, 0, 0);
 		
 		for(int i = 0; i < go.size(); i++)
 		{
@@ -193,8 +197,7 @@ public class Level
 			{
 				if(tiles[x + y * levelW] == 2)
 				{
-					tileSheet.lb = 0;
-					r.drawImageTile(tileSheet, 2, 0, x * tileSheet.tW, y * tileSheet.tH);
+					r.drawImage(lava, x * TS, y * TS);
 					for(int i = 0; i < Level.TS; i++)
 					{
 						r.drawLightBox(lightBox, (x * Level.TS) + i, (y + 1) * Level.TS);

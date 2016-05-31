@@ -1,9 +1,6 @@
 package com.base.engine;
 
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 
@@ -41,14 +38,17 @@ public class Window
 		
 		if(bs == null)
 		{
-			canvas.createBufferStrategy(2);
+			canvas.createBufferStrategy(3);
 			return;
 		}
 		
-		Graphics g = bs.getDrawGraphics();
-		
+		Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+		g.setComposite(ac);
 		g.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
-		
+
+
 		g.dispose();
 		bs.show();
 	}

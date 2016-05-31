@@ -9,7 +9,7 @@ public class GameContainer implements Runnable
 	private Input input;
 
 	private int width = 320, height = 240;
-	private float scale = 2.5f;
+	private float scale = 1f;
 	private String title = "LudumDare";
 	private volatile boolean isRunning = false;
 	private double frameCap = 1.0 / 60.0;

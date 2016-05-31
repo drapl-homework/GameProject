@@ -12,18 +12,25 @@ import com.base.engine.Vector2f;
 
 public class Player extends GameObject
 {
+	private static final int HEADING_LEFT = 0xaaa;
+	private static final int HEADING_RIGHT = 0xbbb;
+
 	private int height = 2;
-	private ImageTile[] spriteSheet = { null,
-			new ImageTile("/images/playerSheet.png", Level.TS, Level.TS),
-			new ImageTile("/images/playerSheet.png", Level.TS, 2 * Level.TS), };
+	private Image image_idle_l = new Image("/images/hero_idle_l.png");
+	private Image image_idle_r = new Image("/images/hero_idle_r.png");
+	private Image[] image_walk_l = { new Image("/images/hero_walk1_l.png"),
+			new Image("/images/hero_walk2_l.png")};
+	private Image[] image_walk_r = { new Image("/images/hero_walk1_r.png"),
+			new Image("/images/hero_walk2_r.png")};
 	private static Image heart = new Image("/images/heart.png");
 	private static Image jetPackAquired = new Image("/images/jetPackAcquired.png");
 	private static AudioPlayer hurt = new AudioPlayer("/sound/playerHurt.wav");
 	private static AudioPlayer shoot = new AudioPlayer("/sound/throw.wav");
+	private int walkingCounter = 0;
 
 	private float countDown = 0f; // countdown for "jet acquired."
 
-	private float movSpeed = 75f;
+	private float movSpeed = 75f * Level.TS / 8;
 	private float fallDistance = 0;
 	
 	private boolean ground = false;
@@ -36,13 +43,12 @@ public class Player extends GameObject
 	
 	int animX = 0;
 	int animY = 0;
-	
+	private boolean isWalking;
+	private int heading = HEADING_RIGHT;
+
 	public Player(int x, int y)
 	{
 		super.tilePos = new Vector2f(x,y);
-		spriteSheet[1].lb = 3;
-		spriteSheet[2].lb = 3;
-
 		tag = "player";
 	}
 
@@ -54,15 +60,20 @@ public class Player extends GameObject
 
 		// walk forward
 		if(Input.isKey(KeyEvent.VK_D)) {
-			animX = 0;
+			isWalking = true;
+			heading = HEADING_RIGHT;
 			calculateXOffset(delta, 1);
 		}
 
 		// walk backward
 		if(Input.isKey(KeyEvent.VK_A)) {
-			animX = 1;
+			isWalking = true;
+			heading = HEADING_LEFT;
 			calculateXOffset(delta, -1);
 		}
+
+		if(!Input.isKey(KeyEvent.VK_D) && !Input.isKey(KeyEvent.VK_A))
+			isWalking =false;
 
 		if(ground && height == 2 && Input.isKey(KeyEvent.VK_S)) {
 			tilePos.setY(tilePos.getY() + 1);
@@ -79,7 +90,7 @@ public class Player extends GameObject
 			if(ground && Input.isKey(KeyEvent.VK_W) &&
 					!Input.isKey(KeyEvent.VK_S))
 			{
-				fallDistance = -1.8f;
+				fallDistance = -1.8f * Level.TS / 8;
 				ground = false;
 			}
 		}
@@ -87,18 +98,18 @@ public class Player extends GameObject
 		{
 			if(Input.isKey(KeyEvent.VK_W))
 			{
-				fallDistance -= delta * 10;
+				fallDistance -= delta * 10 * Level.TS / 8;
 				ground = false;
 			}
 			
 			countDown -= delta;
 		}
 		
-		fallDistance += delta * 5;
+		fallDistance += delta * 5 * Level.TS / 8;
 		
-		if(fallDistance < -2)
+		if(fallDistance < -2 * Level.TS / 8)
 		{
-			fallDistance = -2;
+			fallDistance = -2 * Level.TS / 8;
 		}
 
 		// hit the ground
@@ -195,25 +206,25 @@ public class Player extends GameObject
 		
 		if(Input.isKeyDown(KeyEvent.VK_RIGHT))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),200,0));
+			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),200 * level.TS / 8,0));
 			shoot.play();
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_LEFT))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-200,0));
+			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-200 * level.TS / 8,0));
 			shoot.play();
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_UP))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-200));
+			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-200 * level.TS / 8));
 			shoot.play();
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_DOWN))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200));
+			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200 * level.TS / 8));
 			shoot.play();
 		}
 
@@ -313,10 +324,21 @@ public class Player extends GameObject
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
-		if((int)flash == 1)
-			r.drawImageTile(spriteSheet[height], animX, animY,
-					(int)(super.tilePos.getX() * Level.TS + offset.getX()),
-					(int)(super.tilePos.getY() * Level.TS + offset.getY()));
+		if((int)flash == 1) {
+			Image image_todraw = null;
+			if (!isWalking) {
+				if(heading == HEADING_LEFT)
+					image_todraw = image_idle_l;
+				else image_todraw = image_idle_r;
+			} else {
+				if(heading == HEADING_LEFT)
+					image_todraw = image_walk_l[(walkingCounter++ / 8) % 2];
+				else image_todraw = image_walk_r[(walkingCounter++ / 8) % 2];
+			}
+			r.drawImage(image_todraw,
+					(int) (super.tilePos.getX() * Level.TS + offset.getX()),
+					(int) (super.tilePos.getY() * Level.TS + offset.getY()));
+		}
 	
 		for(int i = 0; i < lives; i++)
 		{

@@ -1,15 +1,12 @@
 package com.base.game;
 
-import com.base.engine.GameContainer;
-import com.base.engine.ImageTile;
-import com.base.engine.Renderer;
-import com.base.engine.Vector2f;
+import com.base.engine.*;
 
 public class PBullet extends GameObject
 {
 	private float dX, dY;
 	
-	private ImageTile image = new ImageTile("/images/pBullet.png", 3,3);
+	private Image image = new Image("/images/pBullet.png");
 	
 	public PBullet(float x, float y, float dX, float dY)
 	{
@@ -73,7 +70,7 @@ public class PBullet extends GameObject
 			setDead(true);
 			return;
 		}
-		r.drawImageTile(image, 0, 0, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
+		r.drawImage(image, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
 	@Override

@@ -1,16 +1,14 @@
 package com.base.game;
 
-import com.base.engine.AudioPlayer;
-import com.base.engine.GameContainer;
-import com.base.engine.ImageTile;
-import com.base.engine.Light;
-import com.base.engine.Renderer;
-import com.base.engine.Vector2f;
+import com.base.engine.*;
 
 public class Enemy extends GameObject
 {
-	private ImageTile enemy = new ImageTile("/images/enemy.png",Level.TS,Level.TS);
-	
+	private Image[] enemy = { new Image("/images/monstor3_idle1.png"),
+			new Image("/images/monstor3_idle2.png"),
+			new Image("/images/monstor3_idle3.png") };
+	private int statusCounter = 0;
+
 	private float cd = 1;
 	
 	private static AudioPlayer shoot = new AudioPlayer("/sound/enemyshoot.wav");
@@ -20,8 +18,7 @@ public class Enemy extends GameObject
 	{
 		super.setTilePos(new Vector2f(x,y));
 		tag = "enemy";
-		enemy.lb = 3;
-		
+
 		cd = (float) Math.random();
 	}
 	
@@ -79,7 +76,8 @@ public class Enemy extends GameObject
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
-		r.drawImageTile(enemy, 0, 0, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
+		r.drawImage(enemy[(statusCounter++ / 8) % 3],
+				(int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
 	@Override

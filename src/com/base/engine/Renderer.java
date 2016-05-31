@@ -12,7 +12,7 @@ public class Renderer
 	private int ambientLight = Pixel.getColor(0.35f, 0.35f, 0.35f);
 	
 	private Vector2f translate = new Vector2f(0,0);
-	
+
 	public Renderer(GameContainer gc)
 	{
 		p = ((DataBufferInt)gc.getWindow().getImage().getRaster().getDataBuffer()).getData();
@@ -44,7 +44,7 @@ public class Renderer
 		x += (int)translate.getX();
 		y += (int)translate.getY();
 		
-		if(x < 0 || x >= w || y < 0 || y >= h || value == 0xffff00ff)
+		if(x < 0 || x >= w || y < 0 || y >= h || value == 0xffff00ff || (value & 0xff000000) != 0xff000000)
 			return;
 		
 		p[x + y * w] = value;

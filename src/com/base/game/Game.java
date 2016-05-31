@@ -162,9 +162,9 @@ public class Game extends GameContainer implements IGame
 	public static void main(String args[])
 	{
 		GameContainer gc = new Game();
-		gc.setWidth(160);
-		gc.setHeight(96);
-		gc.setScale(5f);
+		gc.setWidth(800);
+		gc.setHeight(576);
+		gc.setScale(1.0f);
 		gc.start();
 	}
 }
