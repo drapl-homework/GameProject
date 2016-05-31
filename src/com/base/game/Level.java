@@ -16,7 +16,7 @@ import com.base.engine.LightBox;
 import com.base.engine.Renderer;
 
 /**
- * ¶¨ÒåÒ»¸öÑÕÉ«£¬±íÊ¾¿ÉÒÔ×´Ì¬»á±äµÄ·½¿é£¬Ã¿¸ôÒ»Ãë×÷ÎªGround³öÏÖ£¬×¢ÒâĞŞ¸ÄloadLevelÖĞµÄ´úÂë
+ * å®šä¹‰ä¸€ä¸ªé¢œè‰²ï¼Œè¡¨ç¤ºå¯ä»¥çŠ¶æ€ä¼šå˜çš„æ–¹å—ï¼Œæ¯éš”ä¸€ç§’ä½œä¸ºGroundå‡ºç°ï¼Œæ³¨æ„ä¿®æ”¹loadLevelä¸­çš„ä»£ç 
  * Load map data( the word "Level" probably means "map")
  * Map data is stored in file "tileData.png",
  * in which one pixel represents for one block in the game.
@@ -25,7 +25,7 @@ import com.base.engine.Renderer;
  * White(0xffffff): Nothing
  * Black(0x000000): Ground
  * Red(0xff0000): Magma
- * (0x...´ı¶¨Òå)£ºChangable£Ôile
+ * (0x...å¾…å®šä¹‰)Â£ÂºChangableÂ£Ã”ile
  * .... TODO
  * Other: Light
  */
