@@ -7,6 +7,7 @@ import javax.swing.Timer;
 
 import com.base.engine.AudioPlayer;
 import com.base.engine.GameContainer;
+import com.base.engine.GameTime;
 import com.base.engine.Image;
 import com.base.engine.ImageTile;
 import com.base.engine.Input;
@@ -15,6 +16,7 @@ import com.base.engine.LightBox;
 import com.base.engine.Renderer;
 
 /**
+ * 定义一个颜色，表示可以状态会变的方块，每隔一秒作为Ground出现，注意修改loadLevel中的代码
  * Load map data( the word "Level" probably means "map")
  * Map data is stored in file "tileData.png",
  * in which one pixel represents for one block in the game.
@@ -23,6 +25,7 @@ import com.base.engine.Renderer;
  * White(0xffffff): Nothing
  * Black(0x000000): Ground
  * Red(0xff0000): Magma
+ * (0x...待定义)：ChangableＴile
  * .... TODO
  * Other: Light
  */
@@ -33,6 +36,12 @@ public class Level
 	private final int levelW = 200;
 	private final int levelH = 12;
 	private int[] tiles = new int[levelW * levelH];
+	
+	public void changeTiles(int x, int y, int type) {
+		tiles[x + y * levelW] = type;
+	}
+
+	private int[] changingTiles = new int[levelW * levelH];
 	
 	private Camera camera;
 	
@@ -60,12 +69,6 @@ public class Level
 		camera = new Camera(player);
 		boss = (Boss) getObject("boss");
 		music.loop();
-		go.add(new GameTimer());
-		
-		timeshower = new Timer(1, new GameTimer());
-		GameTimer.setStartTime(System.currentTimeMillis());
-		GameTimer.setBufferTime(0);
-		timeshower.start();
 	}
 	
 	public void update(GameContainer gc, float delta)
@@ -98,6 +101,26 @@ public class Level
 		}
 		
 		camera.update(gc);
+		
+		double time = GameTimer.getRunTime() / 1000;
+		int sec = (int)Math.floor(time);
+		if (time - sec == 0)
+		{
+			if( sec % 2 == 0)
+				for(int i = 0; i < levelW * levelH; i++)
+				{
+					if (changingTiles[i]==1)
+						tiles[i]=1;
+				}
+			else
+				for(int i = 0; i < levelW * levelH; i++)
+				{
+					if (changingTiles[i]==1)
+						tiles[i]=0;
+				}
+		}
+		//render(gc, r);
+		
 	}
 
 	public void render(GameContainer gc, Renderer r)
@@ -224,12 +247,23 @@ public class Level
 				{
 					go.add(new Boss(x,y));
 				}
+				else if(image.p[x + y * image.w] == 0x...)
+				{
+					changingTiles[x + y * image.w] = 1;
+				}
 				else
 				{
 					lights.add(new Light(image.p[x + y * image.w], 50, x, y));
 				}
 			}
 		}
+		//changingTiles[10+200*6]=1;
+		//changingTiles[10+200*7]=1;
+		go.add(new GameTimer());
+		timeshower = new Timer(1, new GameTimer());
+		GameTimer.setStartTime(System.currentTimeMillis());
+		GameTimer.setBufferTime(0);
+		timeshower.start();
 	}
 	
 	public GameObject getObject(String tag)
