@@ -342,7 +342,7 @@ public class Player extends GameObject
 	
 		for(int i = 0; i < lives; i++)
 		{
-			r.drawImage(heart, (int)(Level.TS * i - r.getTranslate().getX()), 0, true);
+			r.drawImage(heart, (int)(Level.TS * i / 2 - r.getTranslate().getX()), 0, true);
 		}
 		
 		if(countDown > 0)
