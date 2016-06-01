@@ -71,7 +71,7 @@ public class GameTimer extends GameObject implements ActionListener{
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level) {
 		for(int i=0; i<5; i++) {
-			r.drawImage(digits[timeNum[i]], (int)(Level.TS * ( i  ) - r.getTranslate().getX()), Level.TS, true);
+			r.drawImage(digits[timeNum[i]], (int)(Level.TS * ( i  ) / 2 - r.getTranslate().getX()), Level.TS / 2, true);
 		}
 	}
 	@Override
