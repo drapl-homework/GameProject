@@ -43,10 +43,11 @@ public class Renderer
 	{
 		x += (int)translate.getX();
 		y += (int)translate.getY();
-		
-		if(x < 0 || x >= w || y < 0 || y >= h || value == 0xffff00ff || (value & 0xff000000) != 0xff000000)
+
+		if(x < 0 || x >= w || y < 0 || y >= h || value == 0xffff00ff || (value & 0xff000000) >>> 24 <= 0x7f)
 			return;
-		
+
+		value |= 0xff000000;
 		p[x + y * w] = value;
 		lb[x + y * w] = lbv;
 	}
