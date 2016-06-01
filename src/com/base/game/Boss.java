@@ -29,8 +29,8 @@ public class Boss extends GameObject
 	public void update(GameContainer gc, float delta, Level level)
 	{
 		temp += delta;
-		offset.setX(offset.getX() + delta * (float)(Math.cos(temp) * 50));
-		offset.setY(offset.getY() + delta * (float)(Math.sin(temp * 2) * 10));
+		offset.setX(offset.getX() + delta * (float)(Math.cos(temp) * 6 * Level.TS));
+		offset.setY(offset.getY() + delta * (float)(Math.sin(temp * 2) * 2 * Level.TS));
 		
 		if(offset.getY() > Level.TS / 2)
 		{
@@ -61,14 +61,14 @@ public class Boss extends GameObject
 		if(cd < 0)
 		{
 			cd = 2.0f;
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 50,0));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -50,0));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 0,50));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 0,-50));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 35,35));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -35,35));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -35,-35));
-			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 35,-35));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 8 * Level.TS,0));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -8 * Level.TS, 0));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 0,8 * Level.TS));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 0,-8 * Level.TS));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 4 * Level.TS,4 * Level.TS));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -4 * Level.TS,4 * Level.TS));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -4 * Level.TS,-4 * Level.TS));
+			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 4 * Level.TS,-4 * Level.TS));
 		}
 		
 		Physics.addObject(this);
