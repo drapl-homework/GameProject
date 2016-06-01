@@ -323,8 +323,9 @@ public class Level
 		}
 		//changingTiles[10+200*6]=1;  //for test
 		//changingTiles[10+200*7]=1;  //for test
-		go.add(new GameTimer());
-		timeshower = new Timer(1, new GameTimer());
+		GameTimer timer = new GameTimer();
+		go.add(timer);
+		timeshower = new Timer(1, timer);
 		GameTimer.setStartTime(System.currentTimeMillis());
 		GameTimer.setBufferTime(0);
 		timeshower.start();
