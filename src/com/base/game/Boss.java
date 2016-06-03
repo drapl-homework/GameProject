@@ -16,7 +16,8 @@ public class Boss extends GameObject
 	float cd = 1;
 	
 	private static AudioPlayer hurt = new AudioPlayer("/sound/bossHurt.wav");
-	
+	private transient Level level;
+
 	public Boss(int x, int y)
 	{
 		tilePos = new Vector2f(x,y);
@@ -28,6 +29,7 @@ public class Boss extends GameObject
 	@Override
 	public void update(GameContainer gc, float delta, Level level)
 	{
+		this.level = level;
 		temp += delta;
 		offset.setX(offset.getX() + delta * (float)(Math.cos(temp) * 6 * Level.TS));
 		offset.setY(offset.getY() + delta * (float)(Math.sin(temp * 2) * 2 * Level.TS));
@@ -92,6 +94,7 @@ public class Boss extends GameObject
 			if(lives <= 0)
 			{
 				setDead(true);
+				level.setWin(true);
 			}
 		}
 	}
