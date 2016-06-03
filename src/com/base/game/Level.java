@@ -38,7 +38,9 @@ public class Level
 	private final int levelW = 200;
 	private final int levelH = 12;
 	private GeometryTile[] tiles = new GeometryTile[levelW * levelH];
-	
+	private boolean isLose;
+	private boolean isWin;
+
 	public void changeTiles(int x, int y, GeometryTile tile) {
 		tiles[x + y * levelW] = tile;
 	}
@@ -59,9 +61,6 @@ public class Level
 	private AudioPlayer music = new AudioPlayer("/sound/music.wav");
 	
 	private Player player;
-
-	private Boss boss;
-	
 	private Timer timeshower;
 
 	final static Set<MapTile> tileSet = new HashSet<MapTile>() {{
@@ -87,22 +86,11 @@ public class Level
 		loadLevel(true, true);
 		player = (Player) getObject("player");
 		camera = new Camera(player);
-		boss = (Boss) getObject("boss");
 		music.loop();
 	}
 
 	/**
-	 * get the boss object
-	 * @return
-     */
-	public Boss getBoss() {
-		if(boss != null && boss.isDead())
-			return null;
-		return boss;
-	}
-
-	/**
-	 * get the boss object
+	 * get the player object
 	 * @return
 	 */
 	public Player getPlayer() {
@@ -153,12 +141,11 @@ public class Level
 
 		player = (Player) getObject("player");
 		camera = new Camera(player);
-		boss = (Boss) getObject("boss");
 	}
 	
 	public void update(GameContainer gc, float delta)
 	{
-		if(player.isDead())
+		if(isLose)
 		{
 			camera.getPos().setX(camera.getPos().getX() + delta * 50);
 			
@@ -168,8 +155,8 @@ public class Level
 				loadLevel(false, true);
 				SubtitleTrigger.reset();
 				player = (Player) getObject("player");
-				boss = (Boss) getObject("boss");
 				camera = new Camera(player);
+				isLose = false;
 			}
 		}
 		
@@ -207,6 +194,22 @@ public class Level
 				}
 		}
 		*/
+	}
+
+	public boolean isLose() {
+		return isLose;
+	}
+
+	public void setLose(boolean lose) {
+		isLose = lose;
+	}
+
+	public boolean isWin() {
+		return isWin;
+	}
+
+	public void setWin(boolean win) {
+		isWin = win;
 	}
 
 	public void render(GameContainer gc, Renderer r)
@@ -257,12 +260,12 @@ public class Level
 			r.drawLight(lights.get(i), lights.get(i).x * Level.TS + 4, lights.get(i).y * Level.TS + 4);
 		}
 		
-		if(player.isDead() && (boss == null || !boss.isDead()))
+		if(isLose)
 		{
 			r.drawImage(deadScreen, (int)-camera.getPos().getX(), (int)-camera.getPos().getY());
 		}
 		
-		if(boss != null && (boss == null || !boss.isDead()))
+		if(isWin)
 		{
 			r.drawImage(winScreen, (int)-camera.getPos().getX(), (int)-camera.getPos().getY());
 		}

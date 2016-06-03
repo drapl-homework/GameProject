@@ -396,7 +396,8 @@ public class Player extends GameObject
 		{
 			level.addObject(new Particle(tilePos, offset,0xffff0000,1));
 		}
-			setDead(true);
+		setDead(true);
+		level.setLose(true);
 	}
 
 	@Override
