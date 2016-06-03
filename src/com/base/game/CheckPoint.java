@@ -5,25 +5,18 @@ import com.base.engine.Image;
 import com.base.engine.Renderer;
 import com.base.engine.Vector2f;
 
-import javax.swing.*;
-
-public class SubtitleTrigger extends GameObject
+public class CheckPoint extends GameObject
 {
 	private float dX, dY;
+	private Image image = new Image("/images/pBullet.png");
 
 	transient Game game;
-	static String subtitleList[];
 	static int counter = 0;
 
-	public SubtitleTrigger(int x, int y)
+	public CheckPoint(int x, int y)
 	{
 		super.tilePos = new Vector2f(x,y);
-		tag = "subtitle_trigger";
-	}
-
-	public static void setSubtitleList(String[] subtitleList) {
-		SubtitleTrigger.subtitleList = subtitleList;
-		counter = 0;
+		tag = "checkpoint";
 	}
 
 	@Override
@@ -36,6 +29,7 @@ public class SubtitleTrigger extends GameObject
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
+		r.drawImage(image, (int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
 	@Override
@@ -43,30 +37,17 @@ public class SubtitleTrigger extends GameObject
 	{
 		if(go.getTag().equals("player"))
 		{
-			game.showSubtitle(subtitleList[counter++]);
-			setDead(true);
+			game.nextMap();
 		}
-	}
-
-	public static void reset() {
-		counter = 0;
-	}
-
-	public static int getCounter() {
-		return counter;
-	}
-
-	public static void setCounter(int counter) {
-		SubtitleTrigger.counter = counter;
 	}
 
 	@Override
 	public Vector2f getUpperLeft() {
-		return new Vector2f(tilePos.getX(), 0);
+		return new Vector2f(tilePos.getX(), tilePos.getY());
 	}
 
 	@Override
 	public Vector2f getLowerRight() {
-		return new Vector2f(tilePos.getX(), 24);
+		return new Vector2f(tilePos.getX(), tilePos.getY() + 2);
 	}
 }

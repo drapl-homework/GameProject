@@ -34,10 +34,10 @@ public class Level
 {
 	public static final int TS = 48;
 
-	private static Image mapData = new Image("/images/tileData.png");
-	private final int levelW = 200;
-	private final int levelH = 12;
-	private GeometryTile[] tiles = new GeometryTile[levelW * levelH];
+	private Image mapData = new Image("/images/tileData.png");
+	private int levelW;
+	private int levelH;
+	private GeometryTile[] tiles;
 	private boolean isLose;
 	private boolean isWin;
 
@@ -52,20 +52,21 @@ public class Level
 	private Camera camera;
 
 	private GeometryTile air;
-	private Image deadScreen = new Image("/images/deadScreen.png");
-	private Image winScreen = new Image("/images/winScreen.png");
+	private static Image deadScreen = new Image("/images/deadScreen.png");
+	private static Image winScreen = new Image("/images/winScreen.png");
 
 	private ArrayList<GameObject> go = new ArrayList<GameObject>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
 	
-	private AudioPlayer music = new AudioPlayer("/sound/music.wav");
-	
+	private static AudioPlayer music = new AudioPlayer("/sound/music.wav");
+
 	private Player player;
 	private Timer timeshower;
 
 	final static Set<MapTile> tileSet = new HashSet<MapTile>() {{
 		try {
 			add(new GeometryTile("air", 0xffffffff, "/images/air.png", GeometryTile.ACCESSIBLE));
+			add(new GeometryTile("air0", 0xfff0f0f0, "/images/air.png", GeometryTile.ACCESSIBLE)); // 洞穴背景
 			add(new GeometryTile("soil", 0xff000000, "/images/soil.png", GeometryTile.INACCESSIBLE));
 			add(new GeometryTile("soil2", 0xffC0C0C0, "/images/soil2.png", GeometryTile.INACCESSIBLE));
 			add(new GeometryTile("lava", 0xffff0000, "/images/lava.png", GeometryTile.DANGEROUS));
@@ -75,18 +76,32 @@ public class Level
 			add(new GameObjectTile("jetpack", 0xff0000ff, "com.base.game.JetPack"));
 			add(new GameObjectTile("boss", 0xff00ffff, "com.base.game.Boss"));
 			add(new GameObjectTile("subtitle_trigger", 0xff00C000, "com.base.game.SubtitleTrigger"));
+			add(new GameObjectTile("checkpoint", 0xff000080, "com.base.game.CheckPoint"));
 		} catch (ClassNotFoundException e) {
 			System.err.println("Cannot load class.");
 			System.exit(1);
 		}
 	}};
 	
-	public Level()
+	public Level(Image mapData)
 	{
+		this.mapData = mapData;
+		levelW = mapData.w;
+		levelH = mapData.h;
+		tiles = new GeometryTile[levelW * levelH];
+
 		loadLevel(true, true);
 		player = (Player) getObject("player");
 		camera = new Camera(player);
 		music.loop();
+	}
+
+	public void changeLevel(Image mapData) {
+		this.mapData = mapData;
+		levelW = mapData.w;
+		levelH = mapData.h;
+		tiles = new GeometryTile[levelW * levelH];
+		reset(true, true);
 	}
 
 	/**
@@ -108,6 +123,8 @@ public class Level
 		System.out.println("Saving...");
 		File file = new File(path);
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
+		out.writeObject(Game.getInstance().getCurrentMap());
+		out.writeObject(SubtitleTrigger.getCounter());
 		for(int i=0; i<tiles.length; i++) {
 			out.writeObject(tiles[i].getTag());
 		}
@@ -127,6 +144,8 @@ public class Level
 		ObjectInputStream oin = new ObjectInputStream(new FileInputStream(file));
 		go = new ArrayList<>();
 		try {
+			Game.getInstance().setCurrentMap((int) oin.readObject());
+			SubtitleTrigger.setCounter((int) oin.readObject());
 			for(int i=0; i<tiles.length; i++) {
 				tiles[i] = (GeometryTile) getTile((String) oin.readObject());
 			}
@@ -151,13 +170,7 @@ public class Level
 			
 			if(Input.isKeyDown(KeyEvent.VK_SPACE))
 			{
-				go.clear();
-				loadLevel(false, true);
-				SubtitleTrigger.reset();
-				Game.getInstance().clearSubtitle();
-				player = (Player) getObject("player");
-				camera = new Camera(player);
-				isLose = false;
+				reset(false, true);
 			}
 		}
 		
@@ -197,6 +210,17 @@ public class Level
 		*/
 	}
 
+	private void reset(boolean loadMap, boolean loadGameObject) {
+		go.clear();
+		loadLevel(loadMap, loadGameObject);
+		SubtitleTrigger.reset();
+		Game.getInstance().clearSubtitle();
+		player = (Player) getObject("player");
+		camera = new Camera(player);
+		isLose = false;
+		isWin = false;
+	}
+
 	public boolean isLose() {
 		return isLose;
 	}
@@ -222,7 +246,7 @@ public class Level
 			for(int y = (int) (-camera.getPos().getY() / Level.TS); y < (int) (-camera.getPos().getY() / Level.TS) + gc.getHeight() / Level.TS; y++)
 			{
 				if(x >= levelW)
-					return;
+					break;
 				if(y >= levelH || y < 0)
 					continue;
 				r.drawImage(tiles[x + y * levelW].getImage(), x * TS, y * TS);
