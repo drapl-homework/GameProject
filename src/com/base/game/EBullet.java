@@ -2,7 +2,6 @@ package com.base.game;
 
 import com.base.engine.GameContainer;
 import com.base.engine.Image;
-import com.base.engine.ImageTile;
 import com.base.engine.Renderer;
 import com.base.engine.Vector2f;
 
@@ -54,7 +53,7 @@ public class EBullet extends GameObject
 		
 		Physics.addObject(this);
 		
-		if(level.getTile((int)tilePos.getX(), (int)tilePos.getY()) == 1)
+		if(level.getAccessibility((int)tilePos.getX(), (int)tilePos.getY()) != GeometryTile.ACCESSIBLE)
 		{
 			setDead(true);
 

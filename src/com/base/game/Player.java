@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import com.base.engine.AudioPlayer;
 import com.base.engine.GameContainer;
 import com.base.engine.Image;
-import com.base.engine.ImageTile;
 import com.base.engine.Input;
 import com.base.engine.Renderer;
 import com.base.engine.Vector2f;
@@ -118,7 +117,8 @@ public class Player extends GameObject
 			// when not walking
 			if((int)offset.getX() == 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1)
+				if(level.getAccessibility((int)tilePos.getX(),
+						(int)tilePos.getY() + 1 + (height - 1)) == GeometryTile.INACCESSIBLE)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -128,8 +128,10 @@ public class Player extends GameObject
 			// when walking forward
 			else if((int)offset.getX() > 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1 ||
-						level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() + 1 + (height - 1)) == 1)
+				if(level.getAccessibility((int)tilePos.getX(),
+						(int)tilePos.getY() + 1 + (height - 1)) == GeometryTile.INACCESSIBLE ||
+						level.getAccessibility((int)tilePos.getX() + 1,
+								(int)tilePos.getY() + 1 + (height - 1)) == GeometryTile.INACCESSIBLE)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -139,8 +141,8 @@ public class Player extends GameObject
 			// when walking backward
 			else if((int)offset.getX() < 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1 ||
-						level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() + 1 + (height - 1)) == 1)
+				if(level.getAccessibility((int)tilePos.getX(), (int)tilePos.getY() + 1 + (height - 1)) == 1 ||
+						level.getAccessibility((int)tilePos.getX() - 1, (int)tilePos.getY() + 1 + (height - 1)) == 1)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -154,7 +156,8 @@ public class Player extends GameObject
 		{
 			if((int)offset.getX() == 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() - 1) == 1)
+				if(level.getAccessibility((int)tilePos.getX(),
+						(int)tilePos.getY() - 1) == GeometryTile.INACCESSIBLE)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -162,7 +165,10 @@ public class Player extends GameObject
 			}
 			else if((int)offset.getX() > 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() - 1) == 1 || level.getTile((int)tilePos.getX() + 1, (int)tilePos.getY() - 1) == 1)
+				if(level.getAccessibility((int)tilePos.getX(),
+						(int)tilePos.getY() - 1) == GeometryTile.INACCESSIBLE ||
+						level.getAccessibility((int)tilePos.getX() + 1,
+								(int)tilePos.getY() - 1) == GeometryTile.INACCESSIBLE)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -170,7 +176,9 @@ public class Player extends GameObject
 			}
 			else if((int)offset.getX() < 0)
 			{
-				if(level.getTile((int)tilePos.getX(), (int)tilePos.getY() - 1) == 1 || level.getTile((int)tilePos.getX() - 1, (int)tilePos.getY() - 1) == 1)
+				if(level.getAccessibility((int)tilePos.getX(), (int)tilePos.getY() - 1) == GeometryTile.INACCESSIBLE
+						|| level.getAccessibility((int)tilePos.getX() - 1,
+						(int)tilePos.getY() - 1) == GeometryTile.INACCESSIBLE)
 				{
 					fallDistance = 0;
 					offset.setY(0);
@@ -229,11 +237,8 @@ public class Player extends GameObject
 		}
 
 		for(int i=0; i < height; i++) {
-			if (level.getTile((int) tilePos.getX(), (int) tilePos.getY() + i) == 2) {
-				die();
-			}
-
-			if (level.getTile((int) tilePos.getX(), (int) tilePos.getY() + i) == 3) {
+			if (level.getAccessibility((int) tilePos.getX(),
+					(int) tilePos.getY() + i) == GeometryTile.DANGEROUS) {
 				die();
 			}
 		}
@@ -312,7 +317,7 @@ public class Player extends GameObject
      */
 	private boolean canWalk(int xDirection, int yDirection) {
 		for(int i=0; i<height; i++)
-			if(level.getTile((int)tilePos.getX() + xDirection,
+			if(level.getAccessibility((int)tilePos.getX() + xDirection,
 					(int)tilePos.getY() + yDirection + i) == 1) // block
 				return false;
 		return true;
@@ -365,7 +370,8 @@ public class Player extends GameObject
 			// animY = 1;
 		}
 	}
-	
+
+
 	private void takeDamage()
 	{
 		if(invincibility < 0)
@@ -385,12 +391,12 @@ public class Player extends GameObject
 	private void die()
 	{
 		hurt.play();
-		
+
 		for(int i = 0; i < 5; i++)
 		{
 			level.addObject(new Particle(tilePos, offset,0xffff0000,1));
 		}
-		setDead(true);
+			setDead(true);
 	}
 
 	@Override

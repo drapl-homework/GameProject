@@ -2,7 +2,8 @@ package com.base.game;
 
 import java.awt.event.KeyEvent;
 import java.io.*;
-import java.util.ArrayList;
+import java.lang.reflect.Constructor;
+import java.util.*;
 
 import javax.swing.Timer;
 
@@ -36,29 +37,22 @@ public class Level
 	private static Image mapData = new Image("/images/tileData.png");
 	private final int levelW = 200;
 	private final int levelH = 12;
-	private int[] tiles = new int[levelW * levelH];
+	private GeometryTile[] tiles = new GeometryTile[levelW * levelH];
 	
-	public void changeTiles(int x, int y, int type) {
-		tiles[x + y * levelW] = type;
-	}
-	
-	public void changeTiles(int pos, int type){
-		tiles[pos] = type;
+	public void changeTiles(int x, int y, GeometryTile tile) {
+		tiles[x + y * levelW] = tile;
 	}
 
-	private int[] changingTiles = new int[levelW * levelH];
-	
+	public void changeTiles(int pos, GeometryTile tile) {
+		tiles[pos] = tile;
+	}
+
 	private Camera camera;
 
-	private ImageTile tileSheet = new ImageTile("/images/tileSheet.png", 48, 48);
-	private Image soil = new Image("/images/soil.png");
-	private Image soil2 = new Image("/images/soil2.png");
-	private Image air = new Image("/images/air.png");
-	private Image lava = new Image("/images/lava.png");
+	private GeometryTile air;
 	private Image deadScreen = new Image("/images/deadScreen.png");
 	private Image winScreen = new Image("/images/winScreen.png");
-	private LightBox lightBox = new LightBox(100, 0xffff6600);
-	
+
 	private ArrayList<GameObject> go = new ArrayList<GameObject>();
 	private ArrayList<Light> lights = new ArrayList<Light>();
 	
@@ -69,6 +63,24 @@ public class Level
 	private Boss boss;
 	
 	private Timer timeshower;
+
+	final static Set<MapTile> tileSet = new HashSet<MapTile>() {{
+		try {
+			add(new GeometryTile("air", 0xffffffff, "/images/air.png", GeometryTile.ACCESSIBLE));
+			add(new GeometryTile("soil", 0xff000000, "/images/soil.png", GeometryTile.INACCESSIBLE));
+			add(new GeometryTile("soil2", 0xffC0C0C0, "/images/soil2.png", GeometryTile.INACCESSIBLE));
+			add(new GeometryTile("lava", 0xffff0000, "/images/lava.png", GeometryTile.DANGEROUS));
+			add(new GeometryTile("snag", 0xff666666, "/images/lava.png",  GeometryTile.DANGEROUS)); // 钉子
+			add(new GameObjectTile("player", 0xff00ff00, "com.base.game.Player"));
+			add(new GameObjectTile("enemy", 0xffff00ff, "com.base.game.Enemy"));
+			add(new GameObjectTile("jetpack", 0xff0000ff, "com.base.game.JetPack"));
+			add(new GameObjectTile("boss", 0xff00ffff, "com.base.game.Boss"));
+			add(new GameObjectTile("subtitle_trigger", 0xff00C000, "com.base.game.SubtitleTrigger"));
+		} catch (ClassNotFoundException e) {
+			System.err.println("Cannot load class.");
+			System.exit(1);
+		}
+	}};
 	
 	public Level()
 	{
@@ -108,7 +120,9 @@ public class Level
 		System.out.println("Saving...");
 		File file = new File(path);
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file));
-		out.writeObject(tiles);
+		for(int i=0; i<tiles.length; i++) {
+			out.writeObject(tiles[i].getTag());
+		}
 		out.writeObject(go);
 		out.writeObject(lights);
 		out.close();
@@ -124,7 +138,9 @@ public class Level
 		ObjectInputStream oin = new ObjectInputStream(new FileInputStream(file));
 		go = new ArrayList<>();
 		try {
-			tiles = (int[]) oin.readObject();
+			for(int i=0; i<tiles.length; i++) {
+				tiles[i] = (GeometryTile) getTile((String) oin.readObject());
+			}
 			go = (ArrayList<GameObject>) oin.readObject();
 			lights = (ArrayList<Light>) oin.readObject();
 		} catch (ClassNotFoundException e) {
@@ -167,12 +183,13 @@ public class Level
 		}
 		
 		camera.update(gc);
-		
+
+		/*
 		double time = GameTimer.getRunTime() / 1000;
 		int sec = (int)Math.floor(time);
 		if (time - sec == 0)
 		{
-			if( sec % 2 == 0)
+			if(sec % 2 == 0)
 				for(int i = 0; i < levelW * levelH; i++)
 				{
 					if (changingTiles[i]==1)
@@ -185,6 +202,7 @@ public class Level
 						changeTiles(i, 0);
 				}
 		}
+		*/
 	}
 
 	public void render(GameContainer gc, Renderer r)
@@ -199,23 +217,7 @@ public class Level
 					return;
 				if(y >= levelH || y < 0)
 					continue;
-				if(tiles[x + y * levelW] == 1)
-				{
-					//tileSheet.lb = 2;
-					//r.drawImageTile(tileSheet, 1, 0, x * tileSheet.tW, y * tileSheet.tH);
-					r.drawImage(soil, x * TS, y * TS);
-				}
-				else if(tiles[x + y * levelW] == 0)
-				{
-					tileSheet.lb = 0;
-					r.drawImageTile(tileSheet, 0, 0, x * tileSheet.tW, y * tileSheet.tH);
-					// r.drawImage(air, x * TS, y * TS);
-				}
-				else
-				{
-					tileSheet.lb = 0;
-					r.drawImageTile(tileSheet, 3, 0, x * tileSheet.tW, y * tileSheet.tH);
-				}
+				r.drawImage(tiles[x + y * levelW].getImage(), x * TS, y * TS);
 			}
 		}
 		
@@ -224,7 +226,8 @@ public class Level
 		{
 			go.get(i).render(gc, r, this);
 		}
-		
+
+		/*
 		for(int x = 0; x < levelW; x++)
 		{
 			for(int y = 0; y < levelH; y++)
@@ -232,6 +235,7 @@ public class Level
 				if(tiles[x + y * levelW] == 2)
 				{
 					r.drawImage(lava, x * TS, y * TS);
+					// draw lights for lava
 					for(int i = 0; i < Level.TS; i++)
 					{
 						r.drawLightBox(lightBox, (x * Level.TS) + i, (y + 1) * Level.TS);
@@ -239,6 +243,7 @@ public class Level
 				}
 			}
 		}
+		*/
 		
 		for(int i = 0; i < lights.size(); i++)
 		{
@@ -248,23 +253,32 @@ public class Level
 			r.drawLight(lights.get(i), lights.get(i).x * Level.TS + 4, lights.get(i).y * Level.TS + 4);
 		}
 		
-		if(player.isDead() && !boss.isDead())
+		if(player.isDead() && (boss == null || !boss.isDead()))
 		{
 			r.drawImage(deadScreen, (int)-camera.getPos().getX(), (int)-camera.getPos().getY());
 		}
 		
-		if(boss.isDead())
+		if(boss != null && (boss == null || !boss.isDead()))
 		{
 			r.drawImage(winScreen, (int)-camera.getPos().getX(), (int)-camera.getPos().getY());
 		}
 	}
-	
-	public int getTile(int x, int y)
+
+	/**
+	 * get the accessibility of (x,y)
+	 * @param x
+	 * @param y
+     * @return
+     */
+	public int getAccessibility(int x, int y)
 	{
 		if(x < 0 || x >= levelW || y < 0 || y >= levelH)
-			return 1;
+			return GeometryTile.INACCESSIBLE;
+
+		if(tiles[x + y * levelW] == null)
+			return GeometryTile.ACCESSIBLE;
 		
-		return tiles[x + y * levelW];
+		return tiles[x + y * levelW].getAccessibility();
 	}
 	
 	public void addObject(GameObject gameObject)
@@ -272,55 +286,54 @@ public class Level
 		go.add(gameObject);
 	}
 
+	/**
+	 * load the map from .png file.
+	 * @param loadMap whether geometry tile should be loaded.
+	 * @param loadGameObject whether game object tile should be loaded.
+     */
 	public void loadLevel(boolean loadMap, boolean loadGameObject)
 	{
+		Map<Integer, MapTile> tileMap = new HashMap<>();
+		for(MapTile i: tileSet) {
+			tileMap.put(i.getColorCode(), i);
+		}
+
 		for(int x = 0; x < mapData.w; x++)
 		{
 			for(int y = 0; y < mapData.h; y++)
 			{
-				if(mapData.p[x + y * mapData.w] == 0xff000000 && loadMap)
-				{
-					tiles[x + y * mapData.w] = 1;
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xffff0000 && loadMap)
-				{
-					tiles[x + y * mapData.w] = 2;
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xff00ff00 && loadGameObject)
-				{
-					go.add(new Player(x,y));
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xffff00ff && loadGameObject)
-				{
-					go.add(new Enemy(x,y));
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xffffffff && loadMap)
-				{
-					tiles[x + y * mapData.w] = 0;
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xff666666 && loadMap)
-				{
-					tiles[x + y * mapData.w] = 3;
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xff0000ff && loadGameObject)
-				{
-					go.add(new JetPack(x,y));
-				}
-				else if(mapData.p[x + y * mapData.w] == 0xff00ffff && loadGameObject)
-				{
-					go.add(new Boss(x,y));
-				}
-				/*else if(image.p[x + y * image.w] == 0x...)
-				{
-					changingTiles[x + y * image.w] = 1;
-				}*/
-				else if(loadMap)
-				{
-					lights.add(new Light(mapData.p[x + y * mapData.w], 50, x, y));
+				int colorCode = mapData.p[x + y * mapData.w];
+				if(!tileMap.containsKey(colorCode)) {
+					if(loadMap) {
+						lights.add(new Light(mapData.p[x + y * mapData.w], 6 * TS, x, y));
+					}
+					continue;
 				}
 
+				MapTile tile = tileMap.get(colorCode);
+				if((tile instanceof GeometryTile) && loadMap) {
+					tiles[x + y * mapData.w] = (GeometryTile) tile;
+				} else if ((tile instanceof GameObjectTile) && loadGameObject) {
+					try {
+						Class<?> objClass = ((GameObjectTile) tile).getTargetClass();
+						Constructor con = objClass.getConstructor(Integer.TYPE, Integer.TYPE);
+						go.add((GameObject) con.newInstance(x, y));
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.err.println("Can not load object: " +
+								((GameObjectTile) tile).getTargetClass().getName());
+						System.exit(1);
+					}
+				}
 			}
 		}
+
+		air = (GeometryTile) getTile("air");
+		for(int i=0; i<tiles.length; i++) {
+			if(tiles[i] == null)
+				tiles[i] = air;
+		}
+
 		//changingTiles[10+200*6]=1;  //for test
 		//changingTiles[10+200*7]=1;  //for test
 		GameTimer timer = new GameTimer();
@@ -339,6 +352,21 @@ public class Level
 				return go.get(i);
 		}
 		
+		return null;
+	}
+
+	/**
+	 * get specific tile.
+	 * @param tag
+	 * @return
+     */
+	MapTile getTile(String tag)
+	{
+		for(MapTile i: tileSet)
+		{
+			if(i.getTag().equals(tag))
+				return i;
+		}
 		return null;
 	}
 }

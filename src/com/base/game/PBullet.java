@@ -49,7 +49,7 @@ public class PBullet extends GameObject
 		
 		Physics.addObject(this);
 		
-		if(level.getTile((int)tilePos.getX(), (int)tilePos.getY()) == 1)
+		if(level.getAccessibility((int)tilePos.getX(), (int)tilePos.getY()) != GeometryTile.ACCESSIBLE)
 		{
 			setDead(true);
 
