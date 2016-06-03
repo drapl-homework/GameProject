@@ -30,18 +30,9 @@ public class Camera
 			{
 				pos.setX(0);
 			}
-			
-			if (pos.getX() < -Level.TS * 175)
-			{
-				pos.setX(-Level.TS * 175);
-			}
-		}
-		else
-		{
-			if(pos.getX() > -160)
-			{
-				pos.setX(-160);
-			}
+
+			if(pos.getX() < -(200 * Level.TS - gc.getWidth()))
+				pos.setX(-(200 * Level.TS - gc.getWidth()));
 		}
 	}
 
