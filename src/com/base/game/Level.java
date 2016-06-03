@@ -154,6 +154,7 @@ public class Level
 				go.clear();
 				loadLevel(false, true);
 				SubtitleTrigger.reset();
+				Game.getInstance().clearSubtitle();
 				player = (Player) getObject("player");
 				camera = new Camera(player);
 				isLose = false;
