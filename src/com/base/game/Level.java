@@ -125,6 +125,7 @@ public class Level
 		}
 		out.writeObject(go);
 		out.writeObject(lights);
+		out.writeObject(Game.getInstance().getSubtitle());
 		out.close();
 	}
 
@@ -143,6 +144,8 @@ public class Level
 			}
 			go = (ArrayList<GameObject>) oin.readObject();
 			lights = (ArrayList<Light>) oin.readObject();
+			String subtitle = (String) oin.readObject();
+			Game.getInstance().showSubtitle(subtitle);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -163,6 +166,7 @@ public class Level
 			{
 				go.clear();
 				loadLevel(false, true);
+				SubtitleTrigger.reset();
 				player = (Player) getObject("player");
 				boss = (Boss) getObject("boss");
 				camera = new Camera(player);

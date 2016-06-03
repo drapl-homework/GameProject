@@ -4,10 +4,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 
-import com.base.engine.IGame;
-import com.base.engine.GameContainer;
-import com.base.engine.Input;
-import com.base.engine.Pixel;
+import com.base.engine.*;
 import com.base.engine.Renderer;
 
 import javax.swing.*;
@@ -18,11 +15,20 @@ public class Game extends GameContainer implements IGame
 	private Level level;
 
 	private boolean isPaused;
+	private String subtitle = null;
 
-	public Game()
+	private Game()
 	{
 		super.game = this;
 		level = new Level();
+	}
+
+	static Game singleton = null;
+	static public Game getInstance() {
+		if(singleton == null) {
+			singleton = new Game();
+		}
+		return singleton;
 	}
 
 	/**
@@ -55,6 +61,17 @@ public class Game extends GameContainer implements IGame
 	@Override
 	public void update(GameContainer gc, float delta)
 	{
+		if(isPaused) {
+			if(Input.isKeyDown(KeyEvent.VK_ENTER)) {
+				isPaused = false;
+			}
+			return;
+		}
+
+		if(Input.isKeyDown(KeyEvent.VK_ENTER)) {
+			isPaused = true;
+		}
+
 		if(Input.isKeyDown(KeyEvent.VK_NUMPAD9) || Input.isKeyDown(KeyEvent.VK_9))
 		{
 			gc.getRenderer().setAmbientLight(Pixel.getLightSum(gc.getRenderer().getAmbientLight(), 0.05f));
@@ -75,16 +92,13 @@ public class Game extends GameContainer implements IGame
 			gc.setScale(gc.getScale() - 0.5f);
 			gc.resize();
 		}
-		if(Input.isKeyDown(KeyEvent.VK_ENTER)) {
-			isPaused = !isPaused();
-		}
 
 		// handle save/load
 		try {
 			if(Input.isKeyDown(KeyEvent.VK_2)) { // save game
 				boolean pauseStatus = isPaused;
 				isPaused = true;
-				if(level.getBoss() == null) { // the boss has been dead.
+				/*if(level.getBoss() == null) { // the boss has been dead.
 					JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
 							"Winner doesn't have to save the game!", "Save",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -92,7 +106,7 @@ public class Game extends GameContainer implements IGame
 					JOptionPane.showConfirmDialog(super.getWindow().getCanvas(),
 							"Loser doesn't have to save the game!", "Save",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE);
-				} else {
+				} else {*/if(true) {
 					JFileChooser fc = new MyFileChooser();
 					FileNameExtensionFilter filter = new FileNameExtensionFilter(
 							"Saved Games", "sav", "save");
@@ -131,16 +145,30 @@ public class Game extends GameContainer implements IGame
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		if(!isPaused)
-			level.update(gc, delta);
+
+		level.update(gc, delta);
 	}
 
 	@Override
 	public void render(GameContainer gc, Renderer r)
 	{
 		level.render(gc, r);
+		if(subtitle != null)
+			r.drawImage(new TextImage(subtitle), - (int)r.getTranslate().getX(), Level.TS);
 	}
+
+	public void showSubtitle(String text) {
+		subtitle = text;
+	}
+
+	public void clearSubtitle() {
+		subtitle = null;
+	}
+
+	public String getSubtitle() {
+		return subtitle;
+	}
+
 
 	/**
 	 * check whether the game is paused.
@@ -161,7 +189,7 @@ public class Game extends GameContainer implements IGame
 
 	public static void main(String args[])
 	{
-		GameContainer gc = new Game();
+		GameContainer gc = Game.getInstance();
 		gc.setWidth(800);
 		gc.setHeight(576);
 		gc.setScale(1.0f);

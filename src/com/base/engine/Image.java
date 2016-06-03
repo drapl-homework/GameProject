@@ -15,7 +15,8 @@ public class Image implements Serializable
 	public int h;
 	public int lb = 0;
 	private String path;
-	
+
+	Image() {}
 	public Image(String path)
 	{
 		init(path);
