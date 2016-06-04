@@ -90,4 +90,10 @@ public class Enemy extends GameObject
 		}
 	}
 
+	@Override
+	public Vector2f getLowerRight() {
+		return tilePos.add(new Vector2f(0.5f, 0.5f));
+	}
+
+
 }
