@@ -60,9 +60,9 @@ public class Player extends GameObject
 	private boolean ground = false;
 	private boolean jetPack = false;
 	
-	private static boolean knife = false;
-	private static boolean pistol = false;
-	private static boolean smg = false;
+	protected static boolean knife = false;
+	protected static boolean pistol = false;
+	protected static boolean smg = false;
 
 	float invincibility = 0.5f;
 	int lives = 15;

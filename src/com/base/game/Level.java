@@ -136,6 +136,9 @@ public class Level
 		out.writeObject(go);
 		out.writeObject(lights);
 		out.writeObject(Game.getInstance().getSubtitle());
+		out.writeObject(Player.knife);
+		out.writeObject(Player.pistol);
+		out.writeObject(Player.smg);
 		out.close();
 	}
 
@@ -158,6 +161,9 @@ public class Level
 			lights = (ArrayList<Light>) oin.readObject();
 			String subtitle = (String) oin.readObject();
 			Game.getInstance().showSubtitle(subtitle);
+			Player.knife = (boolean) oin.readObject();
+			Player.pistol = (boolean) oin.readObject();
+			Player.smg = (boolean) oin.readObject();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
