@@ -372,9 +372,31 @@ public class Level
 		}
 
 		air = (GeometryTile) getTile("air");
+		GeometryTile air0 = (GeometryTile) getTile("air0");
+		// fill blank tiles
 		for(int i=0; i<tiles.length; i++) {
-			if(tiles[i] == null)
-				tiles[i] = air;
+			// use adjacent tile
+			if(tiles[i] == null) {
+				for(int j=i; j>=0; j--) {
+					if(tiles[j] == air || tiles[j] == air0) {
+						tiles[i] = tiles[j];
+						break;
+					}
+				}
+			}
+
+			// use adjacent tile
+			if(tiles[i] == null) {
+				for(int j=i; j<tiles.length; j++) {
+					if(tiles[j] == air || tiles[j] == air0) {
+						tiles[i] = tiles[j];
+						break;
+					}
+				}
+			}
+
+			// fallback to air
+			if(tiles[i] == null) tiles[i] = air;
 		}
 
 		//changingTiles[10+200*6]=1;  //for test
