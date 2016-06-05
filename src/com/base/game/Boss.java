@@ -11,7 +11,7 @@ public class Boss extends GameObject
 
 	private Image image = new Image("/images/boss.png");
 	
-	int lives = 25;
+	int lives = 50;
 
 	float cd = 1;
 	
@@ -71,6 +71,7 @@ public class Boss extends GameObject
 			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -4 * Level.TS,4 * Level.TS));
 			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), -4 * Level.TS,-4 * Level.TS));
 			level.addObject(new BBullet(tilePos, offset.add(new Vector2f(4,4)), 4 * Level.TS,-4 * Level.TS));
+			
 		}
 		
 		Physics.addObject(this);
@@ -85,7 +86,7 @@ public class Boss extends GameObject
 	@Override
 	public void collide(GameObject go)
 	{
-		if(go.getTag().equals("pBullet"))
+		if(go.getTag().equals("pBullet")||go.getTag().equals("kBullet"))
 		{
 			lives -= 1;
 			

@@ -15,12 +15,37 @@ public class Player extends GameObject
 	private static final int HEADING_RIGHT = 0xbbb;
 
 	private int height = 2;
+	
 	private Image image_idle_l = new Image("/images/hero_idle_l.png");
 	private Image image_idle_r = new Image("/images/hero_idle_r.png");
+	private Image image_idle_knife_l = new Image("/images/hero_idle_knife_l.png");
+	private Image image_idle_knife_r = new Image("/images/hero_idle_knife_r.png");
+	private Image image_idle_pistol_l = new Image("/images/hero_idle_gun1_l.png");
+	private Image image_idle_pistol_r = new Image("/images/hero_idle_gun1_r.png");
+	private Image image_idle_smg_l = new Image("/images/hero_idle_gun2_l.png");
+	private Image image_idle_smg_r = new Image("/images/hero_idle_gun2_r.png");
+	
+	private Image image_squat_l = new Image("/images/squat_l.png");
+	private Image image_squat_r = new Image("/images/squat_r.png");
+	
 	private Image[] image_walk_l = { new Image("/images/hero_walk1_l.png"),
 			new Image("/images/hero_walk2_l.png")};
 	private Image[] image_walk_r = { new Image("/images/hero_walk1_r.png"),
 			new Image("/images/hero_walk2_r.png")};
+	private Image[] image_walk_knife_l = { new Image("/images/walk1_knife_l.png"),
+			new Image("/images/walk2_knife_l.png")};
+	private Image[] image_walk_knife_r = { new Image("/images/walk1_knife_r.png"),
+			new Image("/images/walk2_knife_r.png")};
+	private Image[] image_walk_pistol_l = { new Image("/images/walk1_gun1_l.png"),
+			new Image("/images/walk2_gun1_l.png")};
+	private Image[] image_walk_pistol_r = { new Image("/images/walk1_gun1_r.png"),
+			new Image("/images/walk2_gun1_r.png")};
+	private Image[] image_walk_smg_l = { new Image("/images/walk1_gun2_l.png"),
+			new Image("/images/walk2_gun2_l.png")};
+	private Image[] image_walk_smg_r = { new Image("/images/walk1_gun2_r.png"),
+			new Image("/images/walk2_gun2_r.png")};
+	
+	
 	private static Image heart = new Image("/images/heart.png");
 	private static Image jetPackAquired = new Image("/images/jetPackAcquired.png");
 	private static AudioPlayer hurt = new AudioPlayer("/sound/playerHurt.wav");
@@ -34,6 +59,10 @@ public class Player extends GameObject
 	
 	private boolean ground = false;
 	private boolean jetPack = false;
+	
+	private static boolean knife = false;
+	private static boolean pistol = false;
+	private static boolean smg = false;
 
 	float invincibility = 0.5f;
 	int lives = 15;
@@ -74,12 +103,14 @@ public class Player extends GameObject
 		if(!Input.isKey(KeyEvent.VK_D) && !Input.isKey(KeyEvent.VK_A))
 			isWalking =false;
 
-		if(ground && height == 2 && Input.isKey(KeyEvent.VK_S)) {
+		if(ground && height == 2 && Input.isKey(KeyEvent.VK_S) &&
+				!(Input.isKey(KeyEvent.VK_A) || Input.isKey(KeyEvent.VK_D))) {
 			tilePos.setY(tilePos.getY() + 1);
 			height = 1;
 		}
 
-		if(height == 1 && !Input.isKey(KeyEvent.VK_S)) {
+		if(height == 1 && (!Input.isKey(KeyEvent.VK_S) ||
+				Input.isKey(KeyEvent.VK_A) || Input.isKey(KeyEvent.VK_D))) {
 			tilePos.setY(tilePos.getY() - 1);
 			height = 2;
 		}
@@ -214,26 +245,81 @@ public class Player extends GameObject
 		
 		if(Input.isKeyDown(KeyEvent.VK_RIGHT))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),200 * level.TS / 8,0));
-			shoot.play();
+			if(knife)
+			{
+				level.addObject(new KBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),200 * level.TS / 8,0));
+				shoot.play();
+			}
+			if(pistol)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),200 * level.TS / 8,0));
+				shoot.play();
+			}
+			if(smg)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),2 * 200 * level.TS / 8,0));
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS ), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS ),2 * 200 * level.TS / 8,0));
+				shoot.play();
+			}
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_LEFT))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-200 * level.TS / 8,0));
-			shoot.play();
+			if(knife)
+			{
+				level.addObject(new KBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-200 * level.TS / 8,0));
+				shoot.play();
+			}
+			if(pistol)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-200 * level.TS / 8,0));
+				shoot.play();
+			}
+			if(smg)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),-2 * 200 * level.TS / 8,0));
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS ), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS ),-2 * 200 * level.TS / 8,0));
+				shoot.play();
+			}
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_UP))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-200 * level.TS / 8));
-			shoot.play();
+			if(knife){
+				level.addObject(new KBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-200 * level.TS / 8));
+				shoot.play();
+			}
+			if(pistol)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-200 * level.TS / 8));
+				shoot.play();
+			}
+			if(smg)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,-2 * 200 * level.TS / 8));
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS ), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS ),0,-2 * 200 * level.TS / 8));
+				shoot.play();
+			}
 		}
 		
 		if(Input.isKeyDown(KeyEvent.VK_DOWN))
 		{
-			level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200 * level.TS / 8));
-			shoot.play();
+			if(knife)
+			{
+				level.addObject(new KBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200 * level.TS / 8));
+				shoot.play();
+			}
+			if(pistol)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,200 * level.TS / 8));
+				shoot.play();
+			}
+			if(smg)
+			{
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS / 2), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS / 2),0,2 * 200 * level.TS / 8));
+				level.addObject(new PBullet((int)(super.tilePos.getX() * Level.TS + offset.getX() + Level.TS ), (int)(super.tilePos.getY() * Level.TS + offset.getY() + Level.TS ),0,2 * 200 * level.TS / 8));
+				shoot.play();
+			}
 		}
 
 		for(int i=0; i < height; i++) {
@@ -333,16 +419,54 @@ public class Player extends GameObject
 			Image image_todraw = null;
 			if (!isWalking) {
 				if(heading == HEADING_LEFT)
+				{
 					image_todraw = image_idle_l;
-				else image_todraw = image_idle_r;
+					if(knife)
+						image_todraw = image_idle_knife_l;
+					if(pistol)
+						image_todraw = image_idle_pistol_l;
+					if(smg)
+						image_todraw = image_idle_smg_l;
+					if(height == 1)
+						image_todraw = image_squat_l;
+				}
+				else
+				{
+					image_todraw = image_idle_r;
+					if(knife)
+						image_todraw = image_idle_knife_r;
+					if(pistol)
+						image_todraw = image_idle_pistol_r;
+					if(smg)
+						image_todraw = image_idle_smg_r;
+					if(height == 1)
+						image_todraw = image_squat_r;
+				}
 			} else {
 				if(heading == HEADING_LEFT)
+				{
 					image_todraw = image_walk_l[(walkingCounter++ / 8) % 2];
-				else image_todraw = image_walk_r[(walkingCounter++ / 8) % 2];
+					if(knife)
+						image_todraw = image_walk_knife_l[(walkingCounter++ / 8) % 2];
+					if(pistol)
+						image_todraw = image_walk_pistol_l[(walkingCounter++ / 8) % 2];
+					if(smg)
+						image_todraw = image_walk_smg_l[(walkingCounter++ / 8) % 2];
+				}
+				else
+				{
+					image_todraw = image_walk_r[(walkingCounter++ / 8) % 2];
+					if(knife)
+						image_todraw = image_walk_knife_r[(walkingCounter++ / 8) % 2];
+					if(pistol)
+						image_todraw = image_walk_pistol_r[(walkingCounter++ / 8) % 2];
+					if(smg)
+						image_todraw = image_walk_smg_r[(walkingCounter++ / 8) % 2];
+				} 
 			}
 			r.drawImage(image_todraw,
 					(int) (super.tilePos.getX() * Level.TS + offset.getX()),
-					(int) (super.tilePos.getY() * Level.TS + offset.getY()));
+					(int) ((super.tilePos.getY() + (height - 2)) * Level.TS + offset.getY()));
 		}
 	
 		for(int i = 0; i < lives; i++)
@@ -363,11 +487,33 @@ public class Player extends GameObject
 		{
 			takeDamage();
 		}
-		else if(go.getTag().equals("jetpack"))
+		if(go.getTag().equals("jetpack"))
 		{
 			jetPack = true;
 			countDown = 1.0f;
 			// animY = 1;
+		}
+		if(go.getTag().equals("enemy") || go.getTag().equals("boss"))
+		{
+			takeDamage();
+		}
+		if(go.getTag().equals("knife"))
+		{
+			knife = true;
+			pistol = false;
+			smg = false;
+		}
+		if(go.getTag().equals("pistol"))
+		{
+			knife = false;
+			pistol = true;
+			smg = false;
+		}
+		if(go.getTag().equals("smg"))
+		{
+			knife = false;
+			pistol = false;
+			smg = true;
 		}
 	}
 

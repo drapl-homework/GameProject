@@ -2,19 +2,19 @@ package com.base.game;
 
 import com.base.engine.*;
 
-public class Enemy extends GameObject
+public class Bat extends GameObject
 {
-	private Image[] enemy = { new Image("/images/monstor3_idle1.png"),
-			new Image("/images/monstor3_idle2.png"),
-			new Image("/images/monstor3_idle3.png") };
+	int lives = 3;
+	private Image[] enemy = { new Image("/images/monstor2_fly1.png"),
+			new Image("/images/monstor2_fly2.png")};
 	private int statusCounter = 0;
 
 	private float cd = 1;
 	
 	private static AudioPlayer shoot = new AudioPlayer("/sound/enemyshoot.wav");
 	private static AudioPlayer dead = new AudioPlayer("/sound/enemydead.wav");
-	
-	public Enemy(int x, int y)
+	private static AudioPlayer hurt = new AudioPlayer("/sound/bossHurt.wav");
+	public Bat(int x, int y)
 	{
 		super.setTilePos(new Vector2f(x,y));
 		tag = "enemy";
@@ -23,7 +23,8 @@ public class Enemy extends GameObject
 	}
 	
 	float increment = 0;
-
+	float xx=-5;
+	float yy=0;
 	@Override
 	public void update(GameContainer gc, float delta, Level level)
 	{
@@ -57,11 +58,16 @@ public class Enemy extends GameObject
 		}
 		
 		cd -= delta;
-		
 		if(cd <= 0)
 		{
-			GameObject target = level.getObject("player");
 			cd = 1;
+			level.addObject(new ZBullet((int)(tilePos.getX() * Level.TS + (offset.getX() + 4)), (int)(tilePos.getY() * Level.TS + (offset.getY() + 4))
+					,xx,yy));
+			xx+=1;
+			yy+=0.5;
+			if(xx>5) xx=-5;
+			if(yy>5) yy=0;
+			GameObject target = level.getObject("player");
 			
 			if(target != null && Math.abs(target.getTilePos().getX() - tilePos.getX()) < 10)
 			{
@@ -76,7 +82,7 @@ public class Enemy extends GameObject
 	@Override
 	public void render(GameContainer gc, Renderer r, Level level)
 	{
-		r.drawImage(enemy[(statusCounter++ / 8) % 3],
+		r.drawImage(enemy[(statusCounter++ / 8) % 2],
 				(int)(tilePos.getX() * Level.TS + offset.getX()), (int)(tilePos.getY() * Level.TS + offset.getY()));
 	}
 
@@ -85,15 +91,15 @@ public class Enemy extends GameObject
 	{
 		if(go.getTag().equals("pBullet")||go.getTag().equals("kBullet"))
 		{
-			dead.play();
-			setDead(true);
+			lives -= 1;
+			
+			hurt.play();
+			
+			if(lives <= 0){
+				setDead(true);
+				dead.play();
+			}
 		}
 	}
-
-	@Override
-	public Vector2f getLowerRight() {
-		return tilePos.add(new Vector2f(0.5f, 0.5f));
-	}
-
 
 }

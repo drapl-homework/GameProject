@@ -2,19 +2,20 @@ package com.base.game;
 
 import com.base.engine.*;
 
-public class Enemy extends GameObject
+public class Mushroom extends GameObject
 {
-	private Image[] enemy = { new Image("/images/monstor3_idle1.png"),
-			new Image("/images/monstor3_idle2.png"),
-			new Image("/images/monstor3_idle3.png") };
+	int lives = 5;
+	private Image[] enemy = { new Image("/images/mushroom.png"),
+			new Image("/images/mushroom1.png"),
+			new Image("/images/mushroom2.png") };
 	private int statusCounter = 0;
 
 	private float cd = 1;
 	
 	private static AudioPlayer shoot = new AudioPlayer("/sound/enemyshoot.wav");
 	private static AudioPlayer dead = new AudioPlayer("/sound/enemydead.wav");
-	
-	public Enemy(int x, int y)
+	private static AudioPlayer hurt = new AudioPlayer("/sound/bossHurt.wav");
+	public Mushroom(int x, int y)
 	{
 		super.setTilePos(new Vector2f(x,y));
 		tag = "enemy";
@@ -85,15 +86,15 @@ public class Enemy extends GameObject
 	{
 		if(go.getTag().equals("pBullet")||go.getTag().equals("kBullet"))
 		{
-			dead.play();
-			setDead(true);
+			lives -= 1;
+			
+			hurt.play();
+			
+			if(lives <= 0){
+				setDead(true);
+				dead.play();
+			}
 		}
 	}
-
-	@Override
-	public Vector2f getLowerRight() {
-		return tilePos.add(new Vector2f(0.5f, 0.5f));
-	}
-
 
 }

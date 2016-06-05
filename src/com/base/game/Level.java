@@ -72,8 +72,13 @@ public class Level
 			add(new GeometryTile("lava", 0xffff0000, "/images/lava.png", GeometryTile.DANGEROUS));
 			add(new GeometryTile("snag", 0xff666666, "/images/lava.png",  GeometryTile.DANGEROUS)); // 钉子
 			add(new GameObjectTile("player", 0xff00ff00, "com.base.game.Player"));
-			add(new GameObjectTile("enemy", 0xffff00ff, "com.base.game.Enemy"));
+			add(new GameObjectTile("mushroom", 0xffff00ff, "com.base.game.Mushroom"));
+			add(new GameObjectTile("bat", 0xff800080, "com.base.game.Bat"));
+			add(new GameObjectTile("skull", 0xffC000C0, "com.base.game.Skull"));
 			add(new GameObjectTile("jetpack", 0xff0000ff, "com.base.game.JetPack"));
+			add(new GameObjectTile("knife", 0xff0000C0, "com.base.game.Knife"));//0xff0000C0
+			add(new GameObjectTile("pistol", 0xffffff00, "com.base.game.Pistol"));//0xffffff00
+			add(new GameObjectTile("smg", 0xffC0C000, "com.base.game.Smg"));//0xffC0C000
 			add(new GameObjectTile("boss", 0xff00ffff, "com.base.game.Boss"));
 			add(new GameObjectTile("subtitle_trigger", 0xff00C000, "com.base.game.SubtitleTrigger"));
 			add(new GameObjectTile("checkpoint", 0xff000080, "com.base.game.CheckPoint"));
