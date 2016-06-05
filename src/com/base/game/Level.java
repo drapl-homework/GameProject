@@ -66,7 +66,7 @@ public class Level
 	final static Set<MapTile> tileSet = new HashSet<MapTile>() {{
 		try {
 			add(new GeometryTile("air", 0xffffffff, "/images/air.png", GeometryTile.ACCESSIBLE));
-			add(new GeometryTile("air0", 0xfff0f0f0, "/images/air.png", GeometryTile.ACCESSIBLE)); // 洞穴背景
+			add(new GeometryTile("air0", 0xfff0f0f0, "/images/air0.png", GeometryTile.ACCESSIBLE)); // 洞穴背景
 			add(new GeometryTile("soil", 0xff000000, "/images/soil.png", GeometryTile.INACCESSIBLE));
 			add(new GeometryTile("soil2", 0xffC0C0C0, "/images/soil2.png", GeometryTile.INACCESSIBLE));
 			add(new GeometryTile("lava", 0xffff0000, "/images/lava.png", GeometryTile.DANGEROUS));
