@@ -10,7 +10,7 @@ public class GameContainer implements Runnable
 
 	private int width = 320, height = 240;
 	private float scale = 1f;
-	private String title = "LudumDare";
+	private String title = "GameProject";
 	private volatile boolean isRunning = false;
 	private double frameCap = 1.0 / 60.0;
 
