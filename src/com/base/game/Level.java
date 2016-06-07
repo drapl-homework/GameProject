@@ -75,7 +75,6 @@ public class Level
 			add(new GameObjectTile("mushroom", 0xffff00ff, "com.base.game.Mushroom"));
 			add(new GameObjectTile("bat", 0xff800080, "com.base.game.Bat"));
 			add(new GameObjectTile("skull", 0xffC000C0, "com.base.game.Skull"));
-			add(new GameObjectTile("jetpack", 0xff0000ff, "com.base.game.JetPack"));
 			add(new GameObjectTile("knife", 0xff0000C0, "com.base.game.Knife"));//0xff0000C0
 			add(new GameObjectTile("pistol", 0xffffff00, "com.base.game.Pistol"));//0xffffff00
 			add(new GameObjectTile("smg", 0xffC0C000, "com.base.game.Smg"));//0xffC0C000
